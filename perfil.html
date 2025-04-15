@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil do Jogador - Level Up Academy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    
+  <header>
+    <nav>
+      <a href="LUA.html">Início</a>
+      <a href="jogos.html">Jogos</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="perfil.html" class="ativo">Perfil</a>
+    </nav>
+  </header>
+
+  <main class="perfil-container">
+    <h1>Perfil do Jogador</h1>
+
+    <div class="perfil-box">
+      <p><strong>Nome:</strong> Jogador1</p>
+      <p><strong>Nível:</strong> <span id="nivel">1</span></p>
+      <p><strong>Experiência:</strong> <span id="xp">0</span>/100</p>
+
+      <div class="xp-bar">
+        <div id="xp-preenchido" class="xp-fill" style="width: 0%;"></div>
+      </div>
+
+      <div class="badge-area">
+        <h2>Conquistas</h2>
+        <p>🧠 Primeira Partida • 🔥 Nível 5 • 🎯 100% em Fatos Históricos</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="perfil.js"></script>
+</body>
+</html>
