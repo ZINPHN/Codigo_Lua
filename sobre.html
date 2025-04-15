@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre a L.U.A</title>
+  <link rel="stylesheet" href="sobre.css" />
+</head>
+<body>
+    
+    <nav class="menu-principal">
+        <ul>
+          <li><a href="LUA.html">Início</a></li>
+          <li><a href="jogos.html">Jogos</a></li>
+          <li><a href="sobre.html">Sobre o Projeto</a></li>
+        </ul>
+      </nav>
+      
+  <header>
+    <h1>🌕 Sobre a L.U.A</h1>
+    <p>Escolha o que deseja explorar:</p>
+    <nav class="menu-missoes">
+      <button onclick="mostrarSecao('o-que-e')">📖 O que é a L.U.A?</button>
+      <button onclick="mostrarSecao('missao')">🎯 Missão do Projeto</button>
+      <button onclick="mostrarSecao('criadores')">🛡️ Conheça os Criadores</button>
+      <button onclick="mostrarSecao('como-funciona')">🧩 Como Funciona?</button>
+      <button onclick="mostrarSecao('mensagem')">💬 Deixe sua Mensagem</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="o-que-e" class="secao">
+      <h2>📖 O que é a L.U.A?</h2>
+      <p>L.U.A significa Level Up Academy — uma jornada educacional onde aprender é como subir de nível em um RPG! Aqui, os alunos enfrentam desafios, ganham XP e evoluem em várias áreas do conhecimento de forma divertida.</p>
+    </section>
+
+    <section id="missao" class="secao">
+      <h2>🎯 Missão do Projeto</h2>
+      <p>Transformar o aprendizado em uma experiência dinâmica e empolgante, promovendo o uso de jogos interativos para desenvolver habilidades cognitivas, culturais e criativas.</p>
+    </section>
+
+    <section id="criadores" class="secao">
+      <h2>🛡️ Conheça os Criadores</h2>
+      <ul>
+        <li><strong>Pedro</strong> – O Programador Arcano</li>
+        <li><strong>Emilly</strong> – A Designer Encantadora</li>
+        <li><strong>Guilherme</strong> – O Mestre das Lógicas</li>
+        <li><strong>Samuel</strong> – O Guardião do Código</li>
+        <li><strong>Ruan</strong> – O Arquiteto das Ideias</li>
+      </ul>
+      <p>Todos estudantes do 3º ano B, unidos para criar uma nova forma de aprender!</p>
+    </section>
+
+    <section id="como-funciona" class="secao">
+      <h2>🧩 Como Funciona?</h2>
+      <p>Cada jogo do site foca em uma habilidade diferente: vocabulário, memória, lógica, história e mais! Conforme você joga, ganha XP e avança como um verdadeiro herói da aprendizagem.</p>
+    </section>
+
+    <section id="mensagem" class="secao">
+      <h2>💬 Deixe sua Mensagem</h2>
+      <p>Tem algo a dizer? Uma sugestão ou apoio? Envie uma mensagem para nossa guilda!</p>
+      <form>
+        <input type="text" placeholder="Seu nome" required />
+        <textarea placeholder="Sua mensagem..." required></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    function mostrarSecao(id) {
+      document.querySelectorAll('.secao').forEach(secao => {
+        secao.style.display = 'none';
+      });
+      document.getElementById(id).style.display = 'block';
+    }
+
+    // Exibe a primeira por padrão
+    mostrarSecao('o-que-e');
+  </script>
+<div id="perfil-container" style="position: fixed; top: 10px; right: 10px; z-index: 1000;"></div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    fetch("perfil-icon.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("perfil-container").innerHTML = data;
+      });
+  });
+</script>
+
+
+</body>
+</html>
