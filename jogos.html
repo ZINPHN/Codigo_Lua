@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogos | Level Up Academy</title>
+  <link rel="stylesheet" href="jogos.css">
+</head>
+
+<body>
+  
+  <nav class="menu-principal">
+    <ul>
+      <li><a href="LUA.html">Início</a></li>
+      <li><a href="jogos.html">Jogos</a></li>
+      <li><a href="sobre.html">Sobre o Projeto</a></li>
+    </ul>
+  </nav>
+  
+  <header>
+    <h1>Jogos da Level Up Academy</h1>
+    <div class="level-bar">
+      <span>Nível: <strong>1</strong></span>
+      <div class="xp-bar">
+        <div class="xp-fill" style="width: 35%;"></div>
+      </div>
+      <span>XP: 100 / 1000</span>
+    </div>
+  </header>
+
+  <button onclick="ganharXP()" class="xp-btn">Ganhar XP</button>
+
+<script>
+  let xpAtual = 100;
+  let xpMaximo = 1000;
+  let nivel = 1;
+
+  function atualizarXP() {
+    const xpBarra = document.querySelector('.xp-fill');
+    const xpTexto = document.querySelector('.level-bar span:last-child');
+    const nivelTexto = document.querySelector('.level-bar span strong');
+
+    const progresso = (xpAtual / xpMaximo) * 100;
+    xpBarra.style.width = progresso + '%';
+    xpTexto.textContent = `XP: ${xpAtual} / ${xpMaximo}`;
+    nivelTexto.textContent = nivel;
+  }
+
+  function ganharXP() {
+    if (nivel >= 20) return;
+
+    xpAtual += 150;
+    if (xpAtual >= xpMaximo) {
+      xpAtual = xpAtual - xpMaximo;
+      nivel++;
+    }
+    atualizarXP();
+  }
+
+  atualizarXP(); // inicializa
+</script>
+
+
+  <main class="container">
+    <section class="game">
+      <h2>Caça Palavras</h2>
+      <p>Um modelo de letras interativas e educativas. Ideal para que os estudantes melhorem seu vocabulário de forma divertida. Personalizável e fácil de editar para se adaptar a diferentes temas e níveis educativos.</p>
+    </section>
+
+    <section class="game">
+      <h2>Jogo da Memória</h2>
+      <p>Potencializa a agilidade mental e a memória com este divertido jogo interativo. Ideal para estimular a cognição. Exercite sua mente enquanto se diverte encontrando os pares.</p>
+    </section>
+
+    <section class="game">
+      <h2>Fatos Históricos</h2>
+      <p>Explore fatos históricos de forma divertida. Ideal para aprender sobre cronologias, personagens e acontecimentos importantes. Didático e perfeito para a sala de aula.</p>
+    </section>
+
+    <section class="game">
+      <h2>Encontre os Animais</h2>
+      <p>Baseado no popular jogo de 'Double', com temática animal. Promove diversão e aprendizagem de forma lúdica e criativa.</p>
+    </section>
+
+    <section class="game">
+      <h2>Os 4 Elementos</h2>
+      <p>Desafie seus conhecimentos sobre água, fogo, terra e ar. Participe de um quiz interativo e seja o mais rápido a responder corretamente!</p>
+    </section>
+
+    <section class="game">
+      <h2>Jogo da Dedução</h2>
+      <p>Use lógica e raciocínio para resolver enigmas com base em pistas. Um jogo cheio de mistério e ideal para quem ama desafios inteligentes.</p>
+    </section>
+  </main>
+  <div id="perfil-container" style="position: fixed; top: 10px; right: 10px; z-index: 1000;"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      fetch("perfil-icon.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("perfil-container").innerHTML = data;
+        });
+    });
+  </script>
+  
+
+</body>
+</html>
