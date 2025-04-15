@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Level Up Academy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="perfil-container" style="position: fixed; top: 10px; right: 10px; z-index: 1000;"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("perfil-icon.html")
+          .then(response => response.text())
+          .then(data => {
+            document.getElementById("perfil-container").innerHTML = data;
+          });
+      });
+    </script>
+    
+
+  <header>
+    Level Up Academy
+  </header>
+
+  <nav>
+    <a href="#">Início</a>
+    <a href="jogos.html">Jogos</a>
+    <a href="sobre.html">Sobre o Projeto</a>
+  </nav>
+
+  <div class="container">
+    <section>
+      <h2>O que é o Level Up Academy?</h2>
+      <p>
+        O <strong>Level Up Academy</strong> é uma plataforma educacional feita para transformar o aprendizado em algo divertido, interativo e envolvente. Usando jogos personalizados, desafios lógicos e temas inspirados em tecnologia e cultura geek, nossa missão é ajudar alunos a aprenderem de forma criativa e prática.
+      </p>
+    </section>
+
+    <section>
+      <h2>Como isso ajuda os alunos?</h2>
+      <p>
+        Ao invés de só estudar com textos, aqui você aprende jogando! Os jogos da plataforma desenvolvem memória, raciocínio, dedução e conhecimento geral, tornando o aprendizado muito mais dinâmico e eficaz — tudo com um visual que lembra os jogos que a gente ama!
+      </p>
+    </section>
+
+    <section>
+      <h2>Quem somos</h2>
+      <p>
+        O projeto foi criado por estudantes do 3º Ano B apaixonados por games, educação e tecnologia:
+      </p>
+      <div class="creators">
+        <span>Pedro</span>
+        <span>Emilly</span>
+        <span>Guilherme</span>
+        <span>Samuel</span>
+        <span>Ruan</span>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>“Suba de nível. Aprenda jogando.”</p>
+    <p>© 2025 Level Up Academy</p>
+  </footer>
+  
+</body>
+</html>
