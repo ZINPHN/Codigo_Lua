@@ -4,10 +4,72 @@
   <meta charset="UTF-8">
   <title>Jogos | Level Up Academy</title>
   <link rel="stylesheet" href="jogos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    .game-button {
+      display: block;
+      margin: 1rem auto;
+      padding: 20px 15px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 15px;
+      text-decoration: none;
+      border: 5px solid;
+      cursor: pointer;
+      box-shadow: 0 0 0 4px black;
+      image-rendering: pixelated;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-align: center;
+    }
+
+    .game-button:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 0 4px #fff, 0 0 9px 9px rgba(255, 255, 255, 0.3);
+    }
+
+    .caca-palavras {
+      background-color: #00bcd4;
+      color: #fff;
+      border-color: #008ba3;
+    }
+
+    .caca-palavras:hover {
+      background-color: #0097a7;
+    }
+
+    .memoria {
+      background-color: #7e57c2;
+      color: #fff;
+      border-color: #5e35b1;
+    }
+
+    .memoria:hover {
+      background-color: #5e35b1;
+    }
+
+    .fatos {
+      background-color: #ff7043;
+      color: #fff;
+      border-color: #d84315;
+    }
+
+    .fatos:hover {
+      background-color: #bf360c;
+    }
+
+    .double {
+      background-color: #4caf50;
+      color: #fff;
+      border-color: #2e7d32;
+    }
+
+    .double:hover {
+      background-color: #1b5e20;
+    }
+  </style>
 </head>
 
 <body>
-  
+
   <nav class="menu-principal">
     <ul>
       <li><a href="LUA.html">Início</a></li>
@@ -15,7 +77,7 @@
       <li><a href="sobre.html">Sobre o Projeto</a></li>
     </ul>
   </nav>
-  
+
   <header>
     <h1>Jogos da Level Up Academy</h1>
     <div class="level-bar">
@@ -29,58 +91,57 @@
 
   <button onclick="ganharXP()" class="xp-btn">Ganhar XP</button>
 
-<script>
-  let xpAtual = 100;
-  let xpMaximo = 1000;
-  let nivel = 1;
+  <script>
+    let xpAtual = 100;
+    let xpMaximo = 1000;
+    let nivel = 1;
 
-  function atualizarXP() {
-    const xpBarra = document.querySelector('.xp-fill');
-    const xpTexto = document.querySelector('.level-bar span:last-child');
-    const nivelTexto = document.querySelector('.level-bar span strong');
+    function atualizarXP() {
+      const xpBarra = document.querySelector('.xp-fill');
+      const xpTexto = document.querySelector('.level-bar span:last-child');
+      const nivelTexto = document.querySelector('.level-bar span strong');
 
-    const progresso = (xpAtual / xpMaximo) * 100;
-    xpBarra.style.width = progresso + '%';
-    xpTexto.textContent = `XP: ${xpAtual} / ${xpMaximo}`;
-    nivelTexto.textContent = nivel;
-  }
-
-  function ganharXP() {
-    if (nivel >= 20) return;
-
-    xpAtual += 150;
-    if (xpAtual >= xpMaximo) {
-      xpAtual = xpAtual - xpMaximo;
-      nivel++;
+      const progresso = (xpAtual / xpMaximo) * 100;
+      xpBarra.style.width = progresso + '%';
+      xpTexto.textContent = `XP: ${xpAtual} / ${xpMaximo}`;
+      nivelTexto.textContent = nivel;
     }
-    atualizarXP();
-  }
 
-  atualizarXP(); // inicializa
-</script>
+    function ganharXP() {
+      if (nivel >= 20) return;
 
+      xpAtual += 50;
+      if (xpAtual >= xpMaximo) {
+        xpAtual = xpAtual - xpMaximo;
+        nivel++;
+      }
+      atualizarXP();
+    }
+
+    atualizarXP(); // inicializa
+  </script>
 
   <main class="container">
     <section class="game">
-      <a href="caca-palavras.html" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded block text-center mt-4">
+      <a href="caca-palavras.html" class="game-button caca-palavras">
         Jogar Caça-Palavras
-    </a>    
+      </a>
     </section>
 
     <section class="game">
-      <a href="jogo-memoria.html" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded block text-center mt-4">
+      <a href="jogo-memoria.html" class="game-button memoria">
         Jogar Jogo da Memória
       </a>
     </section>
 
     <section class="game">
-      <a href="fatos-historicos.html" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded block text-center mt-4">
+      <a href="fatos-historicos.html" class="game-button fatos">
         Jogar Fatos Históricos
       </a>
     </section>
 
     <section class="game">
-      <a href="jogo-double.html" class="bg-cyan-500 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded block text-center mt-4">
+      <a href="jogo-double.html" class="game-button double">
         Jogar double programação
       </a>
     </section>
@@ -95,17 +156,5 @@
       <p>Use lógica e raciocínio para resolver enigmas com base em pistas. Um jogo cheio de mistério e ideal para quem ama desafios inteligentes.</p>
     </section>
   </main>
-  <div id="perfil-container" style="position: fixed; top: 10px; right: 10px; z-index: 1000;"></div>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      fetch("perfil-icon.html")
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("perfil-container").innerHTML = data;
-        });
-    });
-  </script>
-  
-
 </body>
 </html>
