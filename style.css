@@ -369,3 +369,133 @@ footer {
   50% { opacity: 1; }
   100% { opacity: 0.4; }
 }
+
+/* GALÁXIA E PLANETAS */
+.galaxy-map {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 90px;
+  margin: 48px 0 60px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.planet {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatPlanet 4s ease-in-out infinite;
+  transition: filter 0.2s;
+  cursor: pointer;
+  image-rendering: pixelated;
+  background-size: cover;
+  box-shadow: none;
+  filter: none;
+  border-radius: 0; /* ou borda quadrada estilo 8-bit */
+  border: 2px solid #fff; /* pixel art geralmente tem contornos */
+}
+
+.planet a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.planet-label {
+  position: absolute;
+  bottom: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', cursive;
+  color: #88d3ce;
+  font-size: 1em;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px #232347, 1px 1px 0 #6e45e2;
+  pointer-events: none;
+  user-select: none;
+}
+
+.planet:hover {
+  filter: brightness(1.2) drop-shadow(0 0 24px #88d3ce);
+  z-index: 3;
+}
+
+@keyframes floatPlanet {
+  0%, 100% { transform: translateY(0);}
+  50% { transform: translateY(-18px);}
+}
+
+/* Planeta principal (Início) */
+.planet-home {
+  background: linear-gradient(135deg, #6e45e2 60%, #88d3ce 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 32px #6e45e2, 0 0 24px #232347 inset;
+  border: 4px solid #fff;
+  position: relative;
+  animation-duration: 4s;
+}
+.planet-home::after {
+  content: '';
+  position: absolute;
+  left: 18px; top: 18px;
+  width: 18px; height: 18px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+/* Asteroide (Jogos) */
+.planet-asteroid {
+  background: repeating-linear-gradient(135deg, #232347 0 10px, #6e45e2 10px 20px);
+  border-radius: 30% 70% 60% 40% / 40% 30% 70% 60%;
+  box-shadow: 0 0 18px #6e45e2, 0 0 12px #232347 inset;
+  border: 3px solid #88d3ce;
+  position: relative;
+  animation-duration: 5.5s;
+}
+.planet-asteroid::after {
+  content: '';
+  position: absolute;
+  right: 12px; top: 24px;
+  width: 12px; height: 12px;
+  background: #88d3ce44;
+  border-radius: 50%;
+}
+
+/* Lua (Sobre) */
+.planet-moon {
+  background: radial-gradient(circle at 60% 40%, #fff 60%, #88d3ce 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 24px #88d3ce, 0 0 12px #fff inset;
+  border: 3px solid #6e45e2;
+  position: relative;
+  animation-duration: 3.2s;
+}
+.planet-moon::after {
+  content: '';
+  position: absolute;
+  left: 22px; top: 18px;
+  width: 16px; height: 16px;
+  background: #18182e;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .galaxy-map {
+    gap: 40px;
+  }
+  .planet {
+    width: 70px;
+    height: 70px;
+  }
+  .planet-label {
+    font-size: 0.8em;
+  }
+}
