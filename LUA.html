@@ -7,11 +7,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    </script>
-    
+  <div class="stars-bg"></div>
+  
 
-  <header>
-    Level Up Academy
+  <header class="pixel-header">
+    <img src="logo.png.jpg" alt="Logo Level Up Academy" class="logo-lua" id="logoLua">
+    <span class="header-title">Level Up Academy</span>
   </header>
 
   <nav>
@@ -20,40 +21,54 @@
     <a href="sobre.html">Sobre o Projeto</a>
   </nav>
 
-  <div class="container">
-    <section>
-      <h2>O que é o Level Up Academy?</h2>
-      <p>
-        O <strong>Level Up Academy</strong> é uma plataforma educacional feita para transformar o aprendizado em algo divertido, interativo e envolvente. Usando jogos personalizados, desafios lógicos e temas inspirados em tecnologia e cultura geek, nossa missão é ajudar alunos a aprenderem de forma criativa e prática.
-      </p>
-    </section>
-
-    <section>
-      <h2>Como isso ajuda os alunos?</h2>
-      <p>
-        Ao invés de só estudar com textos, aqui você aprende jogando! Os jogos da plataforma desenvolvem memória, raciocínio, dedução e conhecimento geral, tornando o aprendizado muito mais dinâmico e eficaz — tudo com um visual que lembra os jogos que a gente ama!
-      </p>
-    </section>
-
-    <section>
-      <h2>Quem somos</h2>
-      <p>
-        O projeto foi criado por estudantes do 3º Ano B apaixonados por games, educação e tecnologia:
-      </p>
-      <div class="creators">
-        <span>Pedro</span>
-        <span>Emilly</span>
-        <span>Guilherme</span>
-        <span>Samuel</span>
-        <span>Ruan</span>
-      </div>
-    </section>
+  <div class="container pixel-windows">
+  <div class="pixel-window">
+    <h2>O que é o L.U.A?</h2>
+    <p>
+      O <strong>Level Up Academy</strong> é uma plataforma educacional feita para transformar o aprendizado em algo divertido, interativo e envolvente. Usando jogos personalizados, desafios lógicos e temas inspirados em tecnologia e cultura geek, nossa missão é ajudar alunos a aprenderem de forma criativa e prática.
+    </p>
   </div>
+  <div class="pixel-window">
+    <h2>Como isso ajuda os alunos?</h2>
+    <p>
+      Ao invés de só estudar com textos, aqui você aprende jogando! Os jogos da plataforma desenvolvem memória, raciocínio, dedução e conhecimento geral, tornando o aprendizado muito mais dinâmico e eficaz — tudo com um visual que lembra os jogos que a gente ama!
+    </p>
+  </div>
+  <div class="pixel-window">
+    <h2>Quem somos</h2>
+    <p>
+      O projeto foi criado por estudantes do 3º Ano B apaixonados por games, educação e tecnologia:
+    </p>
+    <div class="creators">
+      <span>Pedro</span>
+      <span>Emilly</span>
+      <span>Guilherme</span>
+      <span>Samuel</span>
+      <span>Ruan</span>
+    </div>
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 40px;">
+  <a href="jogos.html" class="button-retro">Começar a Jogar</a>
+</div>
 
   <footer>
     <p>“Suba de nível. Aprenda jogando.”</p>
     <p>© 2025 Level Up Academy</p>
   </footer>
   
+  <script>
+    // Gera estrelas pixel minimalistas no fundo
+    const starsBg = document.querySelector('.stars-bg');
+    for (let i = 0; i < 60; i++) {
+      const star = document.createElement('div');
+      star.className = 'star-pixel';
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.animationDelay = (Math.random() * 2) + 's';
+      starsBg.appendChild(star);
+    }
+  </script>
 </body>
 </html>
