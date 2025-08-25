@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Level Up Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .pixel-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1a1a1a;
+      padding: 20px;
+      border: 5px solid #6200ff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .logo-lua {
+      width: 100px; /* Ajuste proporcional ao tamanho da logo */
+      height: auto;
+      margin-right: 15px;
+    }
+
+    .header-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 40px; /* Reduzido para ficar proporcional */
+      color: #fff;
+      text-shadow: 0 0 5px #fff, 0 0 10px #00bcd4;
+    }
+
+    .glitch {
+      position: relative;
+      color: #ff0000; /* Cor principal do texto */
+      font-weight: bold;
+      animation: glitch-animation 1s infinite;
+    }
+
+    @keyframes glitch-animation {
+      0% {
+        text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #00ff00;
+      }
+      50% {
+        text-shadow: -2px -2px 0 #ff0000, 2px 2px 0 #00ff00;
+      }
+      100% {
+        text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #00ff00;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars-bg"></div>
+  
+
+  <header class="pixel-header">
+    <img src="logo.png.jpg" alt="Logo Level Up Academy" class="logo-lua" id="logoLua">
+    <span class="header-title">Level Up Academy</span>
+  </header>
+
+  <div class="galaxy-map">
+    <div class="planet planet-home" title="Início">
+      <a href="#">
+        <span class="planet-label">Início</span>
+      </a>
+    </div>
+    <div class="planet planet-asteroid" title="Jogos">
+      <a href="jogos.html">
+        <span class="planet-label">Jogos</span>
+      </a>
+    </div>
+    <div class="planet planet-moon" title="Sobre o Projeto">
+      <a href="sobre.html">
+        <span class="planet-label">Sobre</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="container pixel-windows">
+  <div class="pixel-window">
+    <h2>O que é o L.U.A?</h2>
+    <p>
+      O <strong>Level Up Academy</strong> é uma plataforma educacional feita para transformar o aprendizado em algo divertido, interativo e envolvente. Usando jogos personalizados, desafios lógicos e temas inspirados em tecnologia e cultura geek, nossa missão é ajudar alunos a aprenderem de forma criativa e prática.
+    </p>
+  </div>
+  <div class="pixel-window">
+    <h2>Como isso ajuda os alunos?</h2>
+    <p>
+      Ao invés de só estudar com textos, aqui você aprende jogando! Os jogos da plataforma desenvolvem memória, raciocínio, dedução e conhecimento geral, tornando o aprendizado muito mais dinâmico e eficaz — tudo com um visual que lembra os jogos que a gente ama!
+    </p>
+  </div>
+  <div class="pixel-window">
+    <h2>Quem somos</h2>
+    <p>
+      O projeto foi criado por estudantes do 3º Ano B apaixonados por games, educação e tecnologia:
+    </p>
+    <div class="creators">
+      <span>Pedro</span>
+      <span>Emilly</span>
+      <span>Guilherme</span>
+      <span>Samuel</span>
+    </div>
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 40px;">
+  <a href="jogos.html" class="button-retro">Começar a Jogar</a>
+</div>
+
+  <footer>
+    <p>“Suba de nível. Aprenda jogando.”</p>
+    <p>© 2025 Level Up Academy</p>
+  </footer>
+  
+  <script>
+    // Gera estrelas pixel minimalistas no fundo
+    const starsBg = document.querySelector('.stars-bg');
+    for (let i = 0; i < 60; i++) {
+      const star = document.createElement('div');
+      star.className = 'star-pixel';
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.animationDelay = (Math.random() * 2) + 's';
+      starsBg.appendChild(star);
+    }
+
+    function checkAnswer(playerSequence) {
+        // Certifique-se de parar o cronômetro
+        if (gameState.timer) {
+            clearInterval(gameState.timer);
+            gameState.timer = null; // Reseta o estado do cronômetro
+        }
+
+        // Obtém a sequência correta
+        const correctSequence = gameState.currentChallenge.question.shapes.map(shape => shape.color);
+
+        // Compara a sequência do jogador com a sequência correta
+        const isCorrect = JSON.stringify(playerSequence) === JSON.stringify(correctSequence);
+
+        if (isCorrect) {
+            // Resposta correta
+            gameState.xp += 10;
+            showExplosion();
+
+            // Atualiza a interface
+            updateUI();
+
+            // Mostra o resultado de sucesso
+            if (gameState.level < gameState.maxLevels) {
+                showResult(true);
+            } else {
+                // Concluiu todos os níveis
+                showCompletion();
+            }
+        } else {
+            // Resposta errada
+            document.body.classList.add('shake');
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+            }, 500);
+
+            // Mostra o resultado de falha
+            resultTitle.textContent = "ERROU!";
+            resultTitle.className = "text-3xl mb-6 text-red-400"; // Removida a classe 'glitch'
+            resultMessage.textContent = "Tente novamente no próximo nível!";
+            showResult(false);
+        }
+    }
+  </script>
+</body>
+</html>
