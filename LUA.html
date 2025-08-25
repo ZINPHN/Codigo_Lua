@@ -5,6 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Level Up Academy</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .pixel-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1a1a1a;
+      padding: 20px;
+      border: 5px solid #6200ff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .logo-lua {
+      width: 100px; /* Ajuste proporcional ao tamanho da logo */
+      height: auto;
+      margin-right: 15px;
+    }
+
+    .header-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 40px; /* Reduzido para ficar proporcional */
+      color: #fff;
+      text-shadow: 0 0 5px #fff, 0 0 10px #00bcd4;
+    }
+
+    .glitch {
+      position: relative;
+      color: #ff0000; /* Cor principal do texto */
+      font-weight: bold;
+      animation: glitch-animation 1s infinite;
+    }
+
+    @keyframes glitch-animation {
+      0% {
+        text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #00ff00;
+      }
+      50% {
+        text-shadow: -2px -2px 0 #ff0000, 2px 2px 0 #00ff00;
+      }
+      100% {
+        text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #00ff00;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="stars-bg"></div>
@@ -56,7 +99,6 @@
       <span>Emilly</span>
       <span>Guilherme</span>
       <span>Samuel</span>
-      <span>Ruan</span>
     </div>
   </div>
 </div>
@@ -80,6 +122,49 @@
       star.style.left = Math.random() * 100 + 'vw';
       star.style.animationDelay = (Math.random() * 2) + 's';
       starsBg.appendChild(star);
+    }
+
+    function checkAnswer(playerSequence) {
+        // Certifique-se de parar o cronômetro
+        if (gameState.timer) {
+            clearInterval(gameState.timer);
+            gameState.timer = null; // Reseta o estado do cronômetro
+        }
+
+        // Obtém a sequência correta
+        const correctSequence = gameState.currentChallenge.question.shapes.map(shape => shape.color);
+
+        // Compara a sequência do jogador com a sequência correta
+        const isCorrect = JSON.stringify(playerSequence) === JSON.stringify(correctSequence);
+
+        if (isCorrect) {
+            // Resposta correta
+            gameState.xp += 10;
+            showExplosion();
+
+            // Atualiza a interface
+            updateUI();
+
+            // Mostra o resultado de sucesso
+            if (gameState.level < gameState.maxLevels) {
+                showResult(true);
+            } else {
+                // Concluiu todos os níveis
+                showCompletion();
+            }
+        } else {
+            // Resposta errada
+            document.body.classList.add('shake');
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+            }, 500);
+
+            // Mostra o resultado de falha
+            resultTitle.textContent = "ERROU!";
+            resultTitle.className = "text-3xl mb-6 text-red-400"; // Removida a classe 'glitch'
+            resultMessage.textContent = "Tente novamente no próximo nível!";
+            showResult(false);
+        }
     }
   </script>
 </body>
