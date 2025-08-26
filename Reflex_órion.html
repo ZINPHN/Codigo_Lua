@@ -981,7 +981,7 @@
             } else {
                 // Reinicia se todos os níveis forem concluídos
                 gameState.level = 1;
-                gameState.xp = 0;
+                gameState.xp = 0; // <-- ISSO ZERA O XP!
             }
 
             gameState.timeLeft = gameState.timeLimit;
