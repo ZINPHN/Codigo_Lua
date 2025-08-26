@@ -408,8 +408,8 @@
         const gameState = {
             difficulty: null,
             level: 1,
-            xp: 0,
-            maxLevels: 3, // Agora cada dificuldade tem 3 níveis
+            xp: 10, // XP acumulativo
+            maxLevels: 3, // Cada dificuldade tem 3 níveis
             timeLimit: 10,
             timer: null,
             timeLeft: 10,
@@ -516,12 +516,12 @@
 
                 // Verifica se o nível está desbloqueado
                 if (selectedDifficulty === 'medium' && gameState.xp < 150) {
-                    alert('Você precisa de 150 XP no nível fácil para desbloquear o nível médio!');
+                    alert(`Você precisa de 150 XP para desbloquear o nível médio! XP atual: ${gameState.xp}`);
                     return;
                 }
 
                 if (selectedDifficulty === 'hard' && gameState.xp < 250) {
-                    alert('Você precisa de 250 XP no nível médio para desbloquear o nível difícil!');
+                    alert(`Você precisa de 250 XP para desbloquear o nível difícil! XP atual: ${gameState.xp}`);
                     return;
                 }
 
@@ -549,7 +549,6 @@
 
                 gameState.timeLeft = gameState.timeLimit;
                 gameState.level = 1;
-                gameState.xp = 0;
 
                 updateUI();
                 startGame();
@@ -961,7 +960,7 @@
             resultMessage.innerHTML = `
                 Parabéns! Você completou todas as fases!<br>
                 Total de XP: ${gameState.xp}<br><br>
-                <span class="text-yellow-300">Novo jogo desbloqueado: Conexões do Saber</span>
+                Continue jogando para desbloquear novos níveis!
             `;
             
             // Change next level button to "Jogar Novamente"
@@ -979,9 +978,8 @@
             if (gameState.level < gameState.maxLevels) {
                 gameState.level++;
             } else {
-                // Reinicia se todos os níveis forem concluídos
+                // Reinicia o nível atual, mas mantém o XP acumulado
                 gameState.level = 1;
-                gameState.xp = 0; // <-- ISSO ZERA O XP!
             }
 
             gameState.timeLeft = gameState.timeLimit;
@@ -1047,6 +1045,19 @@
             // Atualiza a barra de progresso
             const progressPercent = (gameState.level / gameState.maxLevels) * 100;
             progressBar.style.width = `${progressPercent}%`;
+
+            // Atualiza a opacidade dos níveis bloqueados
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                const difficulty = option.dataset.difficulty;
+
+                if (difficulty === 'medium' && gameState.xp < 150) {
+                    option.classList.add('opacity-50', 'cursor-not-allowed');
+                } else if (difficulty === 'hard' && gameState.xp < 250) {
+                    option.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    option.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
         }
         
         // Initialize game
