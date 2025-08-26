@@ -26,14 +26,26 @@
       box-shadow: 0 0 0 4px #fff, 0 0 9px 9px rgba(255, 255, 255, 0.3);
     }
 
-    .caca-palavras {
-      background-color: #00bcd4;
+    .Reflex_órion {
+      background: linear-gradient(45deg, #00bcd4, #008ba3);
       color: #fff;
-      border-color: #008ba3;
+      border-color: #005f73;
+      text-shadow: 0 0 5px #fff, 0 0 10px #00bcd4;
+      animation: pulse 1.5s infinite;
     }
 
-    .caca-palavras:hover {
-      background-color: #0097a7;
+    .Reflex_órion:hover {
+      background: linear-gradient(45deg, #0097a7, #007c91);
+      box-shadow: 0 0 10px #00bcd4, 0 0 40px #008ba3;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 15px #00bcd4, 0 0 10px #008ba3;
+      }
+      50% {
+        box-shadow: 0 0 10px #00bcd4, 0 0 30px #008ba3;
+      }
     }
 
     .memoria {
@@ -123,14 +135,14 @@
 
   <main class="container">
     <section class="game">
-      <a href="caca-palavras.html" class="game-button caca-palavras">
-        Jogar Caça-Palavras
+      <a href="Reflex_órion.html" class="game-button Reflex_órion">
+        Reflex Órion
       </a>
     </section>
 
     <section class="game">
       <a href="jogo-memoria.html" class="game-button memoria">
-        Jogar Jogo da Memória
+      memorias
       </a>
     </section>
 
@@ -141,19 +153,15 @@
     </section>
 
     <section class="game">
-      <a href="jogo-double.html" class="game-button double">
-        Jogar double programação
-      </a>
+      <button class="game-button double" disabled>
+        🔒 Em breve
+      </button>
     </section>
 
     <section class="game">
-      <h2>Os 4 Elementos</h2>
-      <p>Desafie seus conhecimentos sobre água, fogo, terra e ar. Participe de um quiz interativo e seja o mais rápido a responder corretamente!</p>
-    </section>
-
-    <section class="game">
-      <h2>Jogo da Dedução</h2>
-      <p>Use lógica e raciocínio para resolver enigmas com base em pistas. Um jogo cheio de mistério e ideal para quem ama desafios inteligentes.</p>
+      <button class="game-button" disabled>
+        🔒 Em breve
+      </button>
     </section>
   </main>
 </body>
