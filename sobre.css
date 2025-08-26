@@ -1,82 +1,150 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sobre a L.U.A</title>
-  <link rel="stylesheet" href="sobre.css" />
-</head>
-<body>
-    
-    <nav class="menu-principal">
-        <ul>
-          <li><a href="LUA.html">Início</a></li>
-          <li><a href="jogos.html">Jogos</a></li>
-          <li><a href="sobre.html">Sobre o Projeto</a></li>
-        </ul>
-      </nav>
-      
-  <header>
-    <h1>🌕 Sobre a L.U.A</h1>
-    <p>Escolha o que deseja explorar:</p>
-    <nav class="menu-missoes">
-      <button onclick="mostrarSecao('o-que-e')">📖 O que é a L.U.A?</button>
-      <button onclick="mostrarSecao('missao')">🎯 Missão do Projeto</button>
-      <button onclick="mostrarSecao('criadores')">🛡️ Conheça os Criadores</button>
-      <button onclick="mostrarSecao('como-funciona')">🧩 Como Funciona?</button>
-      <button onclick="mostrarSecao('mensagem')">💬 Deixe sua Mensagem</button>
-    </nav>
-  </header>
-
-  <main>
-    <section id="o-que-e" class="secao">
-      <h2>📖 O que é a L.U.A?</h2>
-      <p>L.U.A significa Level Up Academy — uma jornada educacional onde aprender é como subir de nível em um RPG! Aqui, os alunos enfrentam desafios, ganham XP e evoluem em várias áreas do conhecimento de forma divertida.</p>
-    </section>
-
-    <section id="missao" class="secao">
-      <h2>🎯 Missão do Projeto</h2>
-      <p>Transformar o aprendizado em uma experiência dinâmica e empolgante, promovendo o uso de jogos interativos para desenvolver habilidades cognitivas, culturais e criativas.</p>
-    </section>
-
-    <section id="criadores" class="secao">
-      <h2>🛡️ Conheça os Criadores</h2>
-      <ul>
-        <li><strong>PHN - (Pedro)</strong> O Programador</li>
-        <li><strong>Sra. Enigma - (Emilly)</strong> A Lider do projeto</li>
-        <li><strong>Nati - (Guilherme)</strong> O Mestre das Lógicas</li>
-        <li><strong>Bolinho - (Samuel)</strong> – O Guardião do Código</li>
-
-      </ul>
-      <p>Todos estudantes do 3º ano B, unidos para criar uma nova forma de aprender!</p>
-    </section>
-
-    <section id="como-funciona" class="secao">
-      <h2>🧩 Como Funciona?</h2>
-      <p>Cada jogo do site foca em uma habilidade diferente: vocabulário, memória, lógica, história e mais! Conforme você joga, ganha XP e avança como um verdadeiro herói da aprendizagem.</p>
-    </section>
-
-    <section id="mensagem" class="secao">
-      <h2>💬 Deixe sua Mensagem</h2>
-      <p>Tem algo a dizer? Uma sugestão ou apoio? Envie uma mensagem para nossa guilda!</p>
-      <form>
-        <input type="text" placeholder="Seu nome" required />
-        <textarea placeholder="Sua mensagem..." required></textarea>
-        <button type="submit">Enviar</button>
-      </form>
-    </section>
-  </main>
-
-  <script>
-    function mostrarSecao(id) {
-      document.querySelectorAll('.secao').forEach(secao => {
-        secao.style.display = 'none';
-      });
-      document.getElementById(id).style.display = 'block';
+body {
+    background-color: #0e0e2c;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header {
+    background-color: #1f1f3b;
+    padding: 2rem;
+    text-align: center;
+    border-bottom: 3px solid #6c63ff;
+  }
+  
+  header h1 {
+    font-size: 2.5rem;
+    color: #6c63ff;
+    margin-bottom: 0.5rem;
+  }
+  
+  header p {
+    font-size: 1.2rem;
+    color: #cfcfe2;
+  }
+  
+  .menu-missoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .menu-missoes button {
+    background-color: #292950;
+    border: 2px solid #6c63ff;
+    color: #fff;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .menu-missoes button:hover {
+    background-color: #6c63ff;
+    color: #0e0e2c;
+  }
+  
+  main {
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .secao {
+    display: none;
+    background-color: #1f1f3b;
+    border: 2px solid #6c63ff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .secao h2 {
+    color: #6c63ff;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .secao p, .secao ul {
+    font-size: 1.1rem;
+    color: #e0e0f0;
+    line-height: 1.6;
+  }
+  
+  .secao ul {
+    padding-left: 1.5rem;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  form input, form textarea {
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  form button {
+    background-color: #6c63ff;
+    color: #fff;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  form button:hover {
+    background-color: #847dff;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
     }
-
-    // Exibe a primeira por padrão
-    mostrarSecao('o-que-e');
-  </script>
-</body>
-</html>
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .menu-principal {
+    background-color: #1f1f3b;
+    padding: 1rem 0;
+    text-align: center;
+    border-bottom: 3px solid #6c63ff;
+  }
+  
+  .menu-principal ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+  
+  .menu-principal li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .menu-principal li a:hover {
+    color: #6c63ff;
+  }
+  
+  
