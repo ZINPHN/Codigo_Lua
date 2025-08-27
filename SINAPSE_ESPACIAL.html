@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Sinapse Espacial - Sistema de Craft Infinito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pixelGlow {
+            0% { box-shadow: 0 0 5px #ff0000; }
+            25% { box-shadow: 0 0 10px #00ff00; }
+            50% { box-shadow: 0 0 15px #0000ff; }
+            75% { box-shadow: 0 0 10px #ffff00; }
+            100% { box-shadow: 0 0 5px #ff00ff; }
+        }
+        
+        @keyframes pixelPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pixel-art {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        
+        .glitch-effect {
+            animation: pixelGlow 0.5s infinite;
+        }
+        
+        .pulse-effect {
+            animation: pixelPulse 1s infinite;
+        }
+        
+        .retro-border {
+            border: 4px solid #4a4a4a;
+            box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 6px #4a4a4a;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+        
+        .pixel-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pixel-button:active {
+            top: 2px;
+        }
+        
+        .pixel-button:active:after {
+            top: 1px;
+        }
+        
+        .pixel-button:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-black text-white font-mono min-h-screen overflow-x-hidden relative">
+    <!-- Background stars -->
+    <div id="stars-container" class="fixed inset-0 overflow-hidden z-0"></div>
+    
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Header -->
+        <header class="mb-8 text-center retro-border bg-gray-900 p-4">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-yellow-400 pixel-art">🌌 SINAPSE ESPACIAL</h1>
+            <p class="text-lg text-blue-300">Sistema de Craft Infinito em Pixel Art Retrô</p>
+        </header>
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Left Panel - Inventory -->
+            <div class="w-full lg:w-1/4 retro-border bg-gray-900 p-4 h-fit">
+                <h2 class="text-2xl font-bold mb-4 text-green-400 border-b border-green-400 pb-2">📦 Inventário</h2>
+                <div id="inventory" class="grid grid-cols-4 gap-2">
+                    <!-- Elements will be added here by JavaScript -->
+                </div>
+                
+                <div class="mt-6">
+                    <h3 class="text-xl font-bold mb-2 text-purple-400">🔍 Elementos Selecionados</h3>
+                    <div id="selected-elements" class="flex flex-wrap gap-2 min-h-16 border-2 border-dashed border-gray-600 p-2">
+                        <p class="text-gray-500 text-sm">Selecione elementos para combinar</p>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between">
+                        <button id="combine-btn" class="pixel-button bg-green-600 hover:bg-green-700 text-white px-4 py-2 font-bold retro-border">
+                            🔥 Combinar
+                        </button>
+                        <button id="clear-btn" class="pixel-button bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-bold retro-border">
+                            🗑️ Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Panel - Crafting Area -->
+            <div class="w-full lg:w-2/4 retro-border bg-gray-900 p-4">
+                <h2 class="text-2xl font-bold mb-4 text-yellow-400 border-b border-yellow-400 pb-2">⚙️ Área de Crafting</h2>
+                
+                <div id="result-area" class="bg-gray-800 p-6 text-center mb-6 min-h-32 flex flex-col justify-center items-center">
+                    <div id="result-icon" class="w-16 h-16 mb-4"></div>
+                    <p id="result-text" class="text-xl">Combine elementos para criar algo novo!</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-2 text-blue-400">📜 História de Combinações</h3>
+                    <div id="history" class="bg-gray-800 p-4 h-48 overflow-y-auto text-sm">
+                        <!-- History items will be added here -->
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 p-4">
+                    <h3 class="text-xl font-bold mb-2 text-pink-400">💡 Dica</h3>
+                    <p id="hint" class="text-sm">Comece combinando dois elementos básicos como Fogo e Água.</p>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Stats -->
+            <div class="w-full lg:w-1/4 retro-border bg-gray-900 p-4 h-fit">
+                <h2 class="text-2xl font-bold mb-4 text-red-400 border-b border-red-400 pb-2">📊 Progresso</h2>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between mb-1">
+                        <span>XP: <span id="xp">0</span></span>
+                        <span id="level">Nível 1</span>
+                    </div>
+                    <div class="w-full bg-gray-700 h-6 retro-border">
+                        <div id="xp-bar" class="bg-blue-500 h-full w-0 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-2 text-purple-400">🌟 Descobertas</h3>
+                    <p id="discoveries-count" class="text-2xl font-bold text-center">0</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-2 text-green-400">🪐 Planetas Desbloqueados</h3>
+                    <div id="planets" class="grid grid-cols-2 gap-2">
+                        <div class="bg-gray-800 p-2 text-center retro-border">
+                            <div class="w-12 h-12 mx-auto mb-1 bg-blue-500 rounded-full"></div>
+                            <p class="text-xs">Terra Primordial</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-yellow-400">🏆 Conquistas</h3>
+                    <div id="achievements" class="space-y-2">
+                        <div class="bg-gray-800 p-2 text-sm retro-border opacity-50">
+                            <i class="fas fa-lock mr-2"></i> Primeira Descoberta
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Galaxy Map Button -->
+        <div class="fixed bottom-4 right-4">
+            <button id="galaxy-btn" class="pixel-button bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 font-bold retro-border text-lg">
+                <i class="fas fa-star"></i> Mapa Galáctico
+            </button>
+        </div>
+    </div>
+    
+    <!-- Galaxy Map Modal -->
+    <div id="galaxy-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 retro-border p-6 max-w-4xl w-full max-h-screen overflow-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-bold text-purple-400">🌌 Mapa Galáctico</h2>
+                <button id="close-galaxy" class="pixel-button bg-red-600 hover:bg-red-700 text-white px-4 py-1 font-bold retro-border">
+                    X
+                </button>
+            </div>
+            <div id="galaxy-map" class="w-full h-96 bg-gray-800 relative overflow-hidden">
+                <!-- Nodes will be added here -->
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-yellow-400 rounded-full pulse-effect"></div>
+            </div>
+            <p class="mt-4 text-sm text-gray-400">Cada nova descoberta cria um nó em sua galáxia mental.</p>
+        </div>
+    </div>
+    
+    <!-- Sound Toggle -->
+    <div class="fixed bottom-4 left-4">
+        <button id="sound-btn" class="pixel-button bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full">
+            <i class="fas fa-volume-up"></i>
+        </button>
+    </div>
+
+    <script>
+        // Game elements database
+        const elements = {
+            fire: { name: "Fogo", emoji: "🔥", level: 1, xp: 10 },
+            water: { name: "Água", emoji: "💧", level: 1, xp: 10 },
+            earth: { name: "Terra", emoji: "🌍", level: 1, xp: 10 },
+            wind: { name: "Vento", emoji: "🌬️", level: 1, xp: 10 },
+            lava: { name: "Lava", emoji: "🌋", level: 2, xp: 20, recipe: ["fire", "earth"] },
+            storm: { name: "Tempestade", emoji: "⛈️", level: 2, xp: 20, recipe: ["water", "wind"] },
+            steam: { name: "Vapor", emoji: "💨", level: 2, xp: 20, recipe: ["fire", "water"] },
+            mud: { name: "Lama", emoji: "🌫️", level: 2, xp: 20, recipe: ["water", "earth"] },
+            dust: { name: "Poeira", emoji: "💨", level: 2, xp: 20, recipe: ["earth", "wind"] },
+            energy: { name: "Energia", emoji: "⚡", level: 2, xp: 20, recipe: ["fire", "wind"] },
+            rock: { name: "Rocha", emoji: "🪨", level: 3, xp: 30, recipe: ["lava", "water"] },
+            mountain: { name: "Montanha", emoji: "⛰️", level: 3, xp: 30, recipe: ["rock", "wind"] },
+            river: { name: "Rio", emoji: "🌊", level: 3, xp: 30, recipe: ["mountain", "water"] },
+            tsunami: { name: "Tsunami", emoji: "🌊", level: 3, xp: 30, recipe: ["water", "water"] },
+            volcano: { name: "Vulcão", emoji: "🌋", level: 3, xp: 30, recipe: ["mountain", "lava"] },
+            cloud: { name: "Nuvem", emoji: "☁️", level: 3, xp: 30, recipe: ["steam", "wind"] },
+            rain: { name: "Chuva", emoji: "🌧️", level: 3, xp: 30, recipe: ["cloud", "water"] },
+            life: { name: "Vida", emoji: "🌱", level: 4, xp: 50, recipe: ["river", "wind", "earth", "fire"] },
+            sun: { name: "Sol", emoji: "☀️", level: 4, xp: 50, recipe: ["fire", "energy", "fire"] },
+            moon: { name: "Lua", emoji: "🌕", level: 4, xp: 50, recipe: ["rock", "energy"] },
+            planet: { name: "Planeta", emoji: "🪐", level: 4, xp: 50, recipe: ["earth", "sun"] },
+            civilization: { name: "Civilização", emoji: "🏛️", level: 5, xp: 100, recipe: ["life", "planet"] },
+            galaxy: { name: "Galáxia", emoji: "🌌", level: 5, xp: 100, recipe: ["sun", "planet", "planet"] },
+            blackhole: { name: "Buraco Negro", emoji: "🕳️", level: 5, xp: 100, recipe: ["planet", "planet", "planet", "planet"] },
+            multiverse: { name: "Multiverso", emoji: "🌀", level: 6, xp: 200, recipe: ["galaxy", "galaxy", "blackhole"] }
+        };
+
+        // Game state
+        let gameState = {
+            inventory: ["fire", "water", "earth", "wind"],
+            selected: [],
+            discovered: [],
+            xp: 0,
+            level: 1,
+            xpToNextLevel: 100,
+            soundEnabled: true,
+            history: []
+        };
+
+        // DOM elements
+        const inventoryEl = document.getElementById('inventory');
+        const selectedEl = document.getElementById('selected-elements');
+        const resultArea = document.getElementById('result-area');
+        const resultIcon = document.getElementById('result-icon');
+        const resultText = document.getElementById('result-text');
+        const historyEl = document.getElementById('history');
+        const xpEl = document.getElementById('xp');
+        const xpBar = document.getElementById('xp-bar');
+        const levelEl = document.getElementById('level');
+        const discoveriesEl = document.getElementById('discoveries-count');
+        const hintEl = document.getElementById('hint');
+        const combineBtn = document.getElementById('combine-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const galaxyBtn = document.getElementById('galaxy-btn');
+        const galaxyModal = document.getElementById('galaxy-modal');
+        const closeGalaxy = document.getElementById('close-galaxy');
+        const galaxyMap = document.getElementById('galaxy-map');
+        const soundBtn = document.getElementById('sound-btn');
+        const starsContainer = document.getElementById('stars-container');
+
+        // Initialize game
+        function initGame() {
+            renderInventory();
+            updateStats();
+            createStars();
+            
+            // Event listeners
+            combineBtn.addEventListener('click', combineElements);
+            clearBtn.addEventListener('click', clearSelection);
+            galaxyBtn.addEventListener('click', () => galaxyModal.classList.remove('hidden'));
+            closeGalaxy.addEventListener('click', () => galaxyModal.classList.add('hidden'));
+            soundBtn.addEventListener('click', toggleSound);
+            
+            // Initial hint
+            updateHint();
+        }
+
+        // Create background stars
+        function createStars() {
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random size between 1 and 3px
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Render inventory
+        function renderInventory() {
+            inventoryEl.innerHTML = '';
+            
+            gameState.inventory.forEach(elementId => {
+                const element = elements[elementId];
+                const isSelected = gameState.selected.includes(elementId);
+                
+                const elementEl = document.createElement('div');
+                elementEl.className = `cursor-pointer retro-border p-2 text-center transition-all ${isSelected ? 'bg-blue-800 transform scale-95' : 'bg-gray-800 hover:bg-gray-700'}`;
+                elementEl.innerHTML = `
+                    <div class="text-2xl mb-1">${element.emoji}</div>
+                    <div class="text-xs">${element.name}</div>
+                `;
+                
+                elementEl.addEventListener('click', () => toggleElement(elementId));
+                
+                inventoryEl.appendChild(elementEl);
+            });
+        }
+
+        // Toggle element selection
+        function toggleElement(elementId) {
+            const index = gameState.selected.indexOf(elementId);
+            
+            if (index === -1) {
+                // Add to selection
+                gameState.selected.push(elementId);
+                playSound('select');
+            } else {
+                // Remove from selection
+                gameState.selected.splice(index, 1);
+            }
+            
+            renderInventory();
+            renderSelectedElements();
+            updateHint();
+        }
+
+        // Render selected elements
+        function renderSelectedElements() {
+            if (gameState.selected.length === 0) {
+                selectedEl.innerHTML = '<p class="text-gray-500 text-sm">Selecione elementos para combinar</p>';
+                return;
+            }
+            
+            selectedEl.innerHTML = '';
+            gameState.selected.forEach(elementId => {
+                const element = elements[elementId];
+                
+                const elementEl = document.createElement('div');
+                elementEl.className = 'retro-border bg-gray-800 p-2 text-center';
+                elementEl.innerHTML = `
+                    <div class="text-xl">${element.emoji}</div>
+                    <div class="text-xs">${element.name}</div>
+                `;
+                
+                selectedEl.appendChild(elementEl);
+            });
+        }
+
+        // Combine selected elements
+        function combineElements() {
+            if (gameState.selected.length < 2) {
+                showResult(null, "Selecione pelo menos 2 elementos para combinar!");
+                playSound('error');
+                return;
+            }
+            
+            // Sort elements to make recipe matching easier
+            const sortedSelected = [...gameState.selected].sort();
+            
+            // Try to find a matching recipe
+            let result = null;
+            
+            for (const [elementId, element] of Object.entries(elements)) {
+                if (element.recipe && arraysEqual(element.recipe.sort(), sortedSelected)) {
+                    result = elementId;
+                    break;
+                }
+            }
+            
+            // Special case for combining same elements
+            if (!result && gameState.selected.every(val => val === gameState.selected[0])) {
+                const baseElement = gameState.selected[0];
+                if (baseElement === "water") result = "tsunami";
+                if (baseElement === "fire") result = "inferno"; // Not in our DB, will show as invalid
+            }
+            
+            if (result) {
+                // Valid combination
+                if (!gameState.inventory.includes(result)) {
+                    // New discovery!
+                    gameState.inventory.push(result);
+                    gameState.discovered.push(result);
+                    
+                    // Add XP
+                    const xpGain = elements[result].xp;
+                    gameState.xp += xpGain;
+                    
+                    // Check level up
+                    checkLevelUp();
+                    
+                    // Add to history
+                    addToHistory(result, xpGain);
+                    
+                    // Show result
+                    showResult(result, `Você criou ${elements[result].name}! +${xpGain} XP`);
+                    playSound('discovery');
+                    
+                    // Update galaxy map
+                    updateGalaxyMap();
+                } else {
+                    // Already known
+                    showResult(result, `Você combinou para criar ${elements[result].name} novamente.`);
+                    playSound('combine');
+                }
+            } else {
+                // Invalid combination
+                showResult(null, "Combinação inválida!");
+                resultArea.classList.add('glitch-effect');
+                setTimeout(() => resultArea.classList.remove('glitch-effect'), 1000);
+                playSound('error');
+            }
+            
+            // Clear selection
+            gameState.selected = [];
+            renderInventory();
+            renderSelectedElements();
+            updateStats();
+            updateHint();
+        }
+
+        // Check if player leveled up
+        function checkLevelUp() {
+            if (gameState.xp >= gameState.xpToNextLevel) {
+                gameState.level++;
+                gameState.xp -= gameState.xpToNextLevel;
+                gameState.xpToNextLevel = Math.floor(gameState.xpToNextLevel * 1.5);
+                
+                // Show level up message
+                addToHistory(null, `⭐ Nível aumentado para ${gameState.level}!`);
+                playSound('levelup');
+                
+                // Unlock new planets at certain levels
+                if (gameState.level === 2) {
+                    addToHistory(null, "🪐 Novo planeta desbloqueado: Planeta de Fogo!");
+                }
+            }
+        }
+
+        // Add entry to history
+        function addToHistory(elementId, message) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            
+            if (elementId) {
+                const element = elements[elementId];
+                gameState.history.unshift({
+                    type: 'discovery',
+                    element: elementId,
+                    message: `[${timeString}] ${message}`,
+                    xp: element.xp
+                });
+            } else {
+                gameState.history.unshift({
+                    type: 'message',
+                    message: `[${timeString}] ${message}`
+                });
+            }
+            
+            // Keep only last 20 entries
+            if (gameState.history.length > 20) {
+                gameState.history.pop();
+            }
+            
+            renderHistory();
+        }
+
+        // Render history
+        function renderHistory() {
+            historyEl.innerHTML = '';
+            
+            gameState.history.forEach(entry => {
+                const entryEl = document.createElement('div');
+                entryEl.className = 'mb-2 pb-2 border-b border-gray-700';
+                
+                if (entry.type === 'discovery') {
+                    const element = elements[entry.element];
+                    entryEl.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="text-xl mr-2">${element.emoji}</div>
+                            <div>
+                                <div>${entry.message}</div>
+                                <div class="text-xs text-blue-400">+${entry.xp} XP</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    entryEl.innerHTML = `<div class="text-yellow-400">${entry.message}</div>`;
+                }
+                
+                historyEl.appendChild(entryEl);
+            });
+        }
+
+        // Show combination result
+        function showResult(elementId, message) {
+            resultText.textContent = message;
+            
+            if (elementId) {
+                const element = elements[elementId];
+                resultIcon.innerHTML = `<div class="text-5xl">${element.emoji}</div>`;
+                resultArea.className = 'bg-gray-800 p-6 text-center mb-6 min-h-32 flex flex-col justify-center items-center pulse-effect';
+                setTimeout(() => {
+                    resultArea.classList.remove('pulse-effect');
+                }, 1000);
+            } else {
+                resultIcon.innerHTML = '';
+                resultArea.className = 'bg-gray-800 p-6 text-center mb-6 min-h-32 flex flex-col justify-center items-center';
+            }
+        }
+
+        // Clear selection
+        function clearSelection() {
+            gameState.selected = [];
+            renderInventory();
+            renderSelectedElements();
+            playSound('clear');
+            updateHint();
+        }
+
+        // Update stats display
+        function updateStats() {
+            xpEl.textContent = gameState.xp;
+            levelEl.textContent = `Nível ${gameState.level}`;
+            discoveriesEl.textContent = gameState.discovered.length;
+            
+            // Update XP bar
+            const xpPercentage = (gameState.xp / gameState.xpToNextLevel) * 100;
+            xpBar.style.width = `${xpPercentage}%`;
+        }
+
+        // Update hint based on current selection
+        function updateHint() {
+            if (gameState.selected.length === 0) {
+                hintEl.textContent = "Comece combinando dois elementos básicos como Fogo e Água.";
+                return;
+            }
+            
+            const selectedNames = gameState.selected.map(id => elements[id].name.toLowerCase());
+            hintEl.textContent = `Tentando combinar: ${selectedNames.join(" + ")}`;
+        }
+
+        // Update galaxy map with discovered elements
+        function updateGalaxyMap() {
+            galaxyMap.innerHTML = '';
+            
+            // Add center node
+            const center = document.createElement('div');
+            center.className = 'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-yellow-400 rounded-full pulse-effect';
+            galaxyMap.appendChild(center);
+            
+            // Add discovered nodes
+            gameState.discovered.forEach((elementId, index) => {
+                const element = elements[elementId];
+                
+                // Position in a spiral pattern
+                const angle = (index / gameState.discovered.length) * Math.PI * 2;
+                const distance = 100 + (index * 5);
+                const x = 50 + Math.cos(angle) * distance / 2;
+                const y = 50 + Math.sin(angle) * distance / 2;
+                
+                const node = document.createElement('div');
+                node.className = 'absolute w-6 h-6 rounded-full flex items-center justify-center cursor-pointer';
+                node.style.left = `${x}%`;
+                node.style.top = `${y}%`;
+                node.style.backgroundColor = getColorForLevel(element.level);
+                node.innerHTML = `<div class="text-xs">${element.emoji}</div>`;
+                
+                node.addEventListener('mouseenter', () => {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'absolute bottom-full left-1/2 transform -translate-x-1/2 bg-gray-900 retro-border p-2 text-xs whitespace-nowrap z-10';
+                    tooltip.textContent = element.name;
+                    node.appendChild(tooltip);
+                });
+                
+                node.addEventListener('mouseleave', () => {
+                    if (node.lastChild.className.includes('tooltip')) {
+                        node.removeChild(node.lastChild);
+                    }
+                });
+                
+                galaxyMap.appendChild(node);
+                
+                // Add connecting line
+                const line = document.createElement('div');
+                line.className = 'absolute bg-gray-600 z-0';
+                line.style.left = '50%';
+                line.style.top = '50%';
+                line.style.width = `${distance / 2}%`;
+                line.style.height = '1px';
+                line.style.transformOrigin = '0 0';
+                line.style.transform = `rotate(${angle}rad)`;
+                galaxyMap.appendChild(line);
+            });
+        }
+
+        // Get color based on element level
+        function getColorForLevel(level) {
+            const colors = [
+                '#FF5252', // Red - Level 1
+                '#FFD740', // Yellow - Level 2
+                '#69F0AE', // Green - Level 3
+                '#40C4FF', // Blue - Level 4
+                '#B388FF', // Purple - Level 5
+                '#FF4081'  // Pink - Level 6
+            ];
+            
+            return colors[Math.min(level - 1, colors.length - 1)];
+        }
+
+        // Play sound
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            
+            // In a real game, you would use actual sound files
+            console.log(`Playing ${type} sound`);
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            soundBtn.innerHTML = gameState.soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+            soundBtn.className = gameState.soundEnabled ? 
+                'pixel-button bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full' : 
+                'pixel-button bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full';
+        }
+
+        // Helper function to compare arrays
+        function arraysEqual(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length !== b.length) return false;
+            
+            for (let i = 0; i < a.length; ++i) {
+                if (a[i] !== b[i]) return false;
+            }
+            
+            return true;
+        }
+
+        // Initialize the game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
