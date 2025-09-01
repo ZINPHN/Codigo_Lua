@@ -515,6 +515,19 @@
             }));
         }
         
+        // -------- Carregar interpretações do Firestore --------
+        async function loadInterpretationsFromFirestore() {
+            const snapshot = await db.collection("interpretacoes").get();
+            return snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    question: data.texto,          // 🔹 usa "texto" como pergunta
+                    options: data.opcoes || [],    // 🔹 lista de opções
+                    correct: data.resposta         // 🔹 resposta correta (ex: "A")
+                };
+            });
+        }
+        
         // Create stars for the background
         function createStars() {
             const container = document.getElementById('stars-container');
@@ -743,16 +756,28 @@
         }
         
         // Setup interpretation mode
-        function setupInterpretationMode() {
+        async function setupInterpretationMode() {
             timeLeft = 30;
             document.getElementById('timer').textContent = timeLeft;
             document.getElementById('game-text').textContent = 'Preparado?';
-            
-            // Generate challenges
-            challenges = [...interpretationQuestions];
+
+            // 🔹 Carrega as interpretações do Firestore
+            challenges = await loadInterpretationsFromFirestore();
             shuffleArray(challenges);
-            
-            // Show first challenge after delay
+
+            // Mostra progresso
+            document.getElementById('progress-container').classList.remove('hidden');
+            document.getElementById('progress-text').textContent = `0/${challenges.length}`;
+            document.getElementById('progress-bar').style.width = '0%';
+
+            // 🔹 Mostra container de opções
+            document.getElementById("options-container").classList.remove("hidden");
+
+            // 🔹 Esconde input, pois aqui é só múltipla escolha
+            document.getElementById("typing-input").style.display = "none";
+            document.getElementById("submit-btn").style.display = "none";
+
+            // Mostra o primeiro desafio após um pequeno atraso
             setTimeout(() => {
                 showNextChallenge();
             }, 1000);
@@ -895,6 +920,19 @@
                 document.getElementById("game-text").textContent = nextChallenge.text;
             } else if (currentMode === "syllables") {
                 document.getElementById("game-text").textContent = nextChallenge;
+            } else if (currentMode === "interpretation") {
+                document.getElementById("game-text").textContent = nextChallenge.question;
+
+                const optionsContainer = document.getElementById("options-container");
+                optionsContainer.innerHTML = ""; // limpa opções antigas
+
+                nextChallenge.options.forEach((option, index) => {
+                    const btn = document.createElement("button");
+                    btn.textContent = option;
+                    btn.className = "pixel-btn bg-yellow-700 hover:bg-yellow-600 text-white py-3 px-6 rounded-none pixel-border w-full";
+                    btn.onclick = () => checkInterpretationAnswer(index);
+                    optionsContainer.appendChild(btn);
+                });
             } else {
                 document.getElementById("game-text").textContent = typeof nextChallenge === "string" ? nextChallenge : nextChallenge.text;
             }
@@ -939,18 +977,16 @@
                 const correctAnswer = challenge.missing.toLowerCase();
                 
                 if (userAnswer === correctAnswer) {
-                    // Correct answer
-                    addScore(5);
-                    
-                    // Bonus for completing the sentence
-                    if (currentMode === 'sentences') {
-                        addScore(10);
-                    }
-                    
+                    // Resposta correta
+                    addScore(10);
                     document.getElementById('game-text').classList.add('correct');
                     createParticles(document.getElementById('game-text'));
+
+                    // Adiciona +5 segundos ao tempo restante
+                    timeLeft += 5;
+                    document.getElementById('timer').textContent = timeLeft;
                 } else {
-                    // Wrong answer
+                    // Resposta errada
                     document.getElementById('game-text').classList.add('wrong');
                 }
                 
@@ -997,37 +1033,34 @@
         
         // Check interpretation answer
         function checkInterpretationAnswer(selectedIndex) {
-            if (!gameActive) return;
-            
-            const challenge = challenges[currentChallengeIndex];
-            const options = document.querySelectorAll('#options-container button');
-            
-            if (selectedIndex === challenge.correct) {
-                // Correct answer
-                addScore(10);
-                options[selectedIndex].classList.add('correct');
-                createParticles(options[selectedIndex]);
-            } else {
-                // Wrong answer
-                options[selectedIndex].classList.add('wrong');
-                options[challenge.correct].classList.add('correct');
-            }
-            
-            // After delay, move to next challenge
-            setTimeout(() => {
-                options.forEach(option => {
-                    option.classList.remove('correct', 'wrong');
-                });
-                
-                currentChallengeIndex++;
-                
-                // Show typing input again for next challenge
-                document.getElementById('typing-input').classList.remove('hidden');
-                document.getElementById('submit-btn').classList.remove('hidden');
-                
-                showNextChallenge();
-            }, 1000);
-        }
+    // Pega a resposta correta do desafio atual
+    const correctLetter = challenges[currentChallengeIndex].correct.trim().toUpperCase(); // ex: "A"
+
+    // Converte o índice da opção selecionada para a letra correspondente
+    const selectedLetter = String.fromCharCode(65 + selectedIndex); // 65="A", 66="B", etc.
+
+    const gameText = document.getElementById('game-text');
+
+    if (selectedLetter === correctLetter) {
+        // Resposta correta
+        gameText.textContent = "✅ Correto!";
+        score++;
+        document.getElementById('score').textContent = score;
+
+        // Adiciona +5 segundos ao tempo restante
+        timeLeft += 5;
+        document.getElementById('timer').textContent = timeLeft;
+    } else {
+        // Resposta errada
+        gameText.textContent = `❌ Errado! A resposta correta era: ${correctLetter}`;
+    }
+
+    // Avança para o próximo desafio após um pequeno atraso
+    setTimeout(() => {
+        currentChallengeIndex++;
+        showNextChallenge();
+    }, 1500); // Aguarda 1.5 segundos antes de mostrar o próximo desafio
+}
         
         // Add score
         function addScore(points) {
