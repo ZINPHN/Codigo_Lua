@@ -6,6 +6,11 @@
     <title>Level Up Typing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -225,10 +230,10 @@
                     <p id="game-text" class="text-2xl md:text-4xl text-center">Preparando o jogo...</p>
                 </div>
                 
-                <!-- Input area -->
-                <div class="flex flex-col md:flex-row gap-4">
-                    <input type="text" id="typing-input" class="typing-input flex-grow text-xl md:text-2xl" placeholder="Digite aqui...">
-                    <button id="submit-btn" class="pixel-btn bg-cyan-600 hover:bg-cyan-500 text-white py-4 px-6 rounded-none pixel-border text-xl">
+                <!-- Game area -->
+                <div id="game-area">
+                    <input type="text" id="typing-input" class="typing-input" placeholder="Digite aqui..." style="display: none;">
+                    <button id="submit-btn" class="pixel-btn bg-cyan-600 hover:bg-cyan-500 text-white py-4 px-6 rounded-none pixel-border text-xl" style="display: none;">
                         ENVIAR
                     </button>
                 </div>
@@ -383,6 +388,19 @@
     </div>
 
     <script>
+        // -------- Firebase Config --------
+     const firebaseConfig = {
+     apiKey: "AIzaSyDOOD1jFfKbznNbhbx0g22orXnvdY55IH8",
+     authDomain: "level-up-academy-698fa.firebaseapp.com",
+     projectId: "level-up-academy-698fa",
+  storageBucket: "level-up-academy-698fa.firebasestorage.app",
+  messagingSenderId: "96904343253",
+  appId: "1:96904343253:web:4f938c593c3968951b7c5c",
+  measurementId: "G-NTMLNLY7PH"
+};
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Game state
         let currentScreen = 'main-menu';
         let currentMode = '';
@@ -393,9 +411,9 @@
         let currentChallengeIndex = 0;
         let challenges = [];
         let creativeItems = [];
-        
+        let syllables = [];
+
         // Sample data for the game
-        const syllables = ['ba', 'be', 'bi', 'bo', 'bu', 'ca', 'ce', 'ci', 'co', 'cu', 'da', 'de', 'di', 'do', 'du'];
         const sentences = [
             { text: "O gato pulou no _.", missing: "telhado" },
             { text: "Eu gosto de comer _ no café da manhã.", missing: "pão" },
@@ -475,10 +493,27 @@
         ];
         
         // Initialize the game
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             createStars();
             setupEventListeners();
+            await loadSyllablesFromFirestore();
         });
+
+        // -------- Carregar sílabas do Firestore --------
+        async function loadSyllablesFromFirestore() {
+            const snapshot = await db.collection("silabas").get();
+            syllables = snapshot.docs.map(doc => doc.data().texto); // cada doc tem {valor:"ba"}
+            console.log("Sílabas carregadas:", syllables);
+        }
+        
+        // -------- Carregar frases do Firestore --------
+        async function loadSentencesFromFirestore() {
+            const snapshot = await db.collection("frasesRelampago").get();
+            return snapshot.docs.map(doc => ({
+                text: doc.data().pergunta.replace("___", "_"), // mostra com espaço
+                missing: doc.data().resposta
+            }));
+        }
         
         // Create stars for the background
         function createStars() {
@@ -521,6 +556,7 @@
                     sendChatMessage();
                 }
             });
+
         }
         
         // Show main menu
@@ -655,37 +691,52 @@
         // Setup syllables mode
         function setupSyllablesMode() {
             timeLeft = 30;
-            document.getElementById('timer').textContent = timeLeft;
-            document.getElementById('game-text').textContent = 'Preparado?';
-            
-            // Generate challenges
+            document.getElementById("timer").textContent = timeLeft;
+            document.getElementById("game-text").textContent = "Preparado?";
+
+            // Exibe o input e o botão
+            document.getElementById("typing-input").style.display = "block";
+            document.getElementById("submit-btn").style.display = "block";
+
+            // Gera os desafios de sílabas
             challenges = [];
             for (let i = 0; i < 20; i++) {
-                challenges.push(syllables[Math.floor(Math.random() * syllables.length)]);
+                const randomSyllable = syllables[Math.floor(Math.random() * syllables.length)];
+                challenges.push(randomSyllable);
             }
-            
-            // Show first challenge after delay
+
+            // Exibe o primeiro desafio após um pequeno atraso
             setTimeout(() => {
                 showNextChallenge();
             }, 1000);
         }
         
         // Setup sentences mode
-        function setupSentencesMode() {
+        async function setupSentencesMode() {
             timeLeft = 45;
             document.getElementById('timer').textContent = timeLeft;
             document.getElementById('game-text').textContent = 'Preparado?';
-            
-            // Generate challenges
-            challenges = [...sentences];
+
+            // 🔹 Puxa frases do Firestore
+            challenges = await loadSentencesFromFirestore();
             shuffleArray(challenges);
-            
-            // Show progress
+
+            // Mostra progresso
             document.getElementById('progress-container').classList.remove('hidden');
             document.getElementById('progress-text').textContent = `0/${challenges.length}`;
             document.getElementById('progress-bar').style.width = '0%';
-            
-            // Show first challenge after delay
+
+            // 🔹 Garante que o input e o botão apareçam
+            const input = document.getElementById("typing-input");
+            const submitBtn = document.getElementById("submit-btn");
+
+            input.style.display = "block";
+            submitBtn.style.display = "block";
+
+            input.value = "";
+            input.focus();
+
+            // Mostra o primeiro desafio
             setTimeout(() => {
                 showNextChallenge();
             }, 1000);
@@ -833,72 +884,28 @@
         
         // Show next challenge
         function showNextChallenge() {
-            if (!gameActive) return;
-            
-            if (currentMode === 'syllables' && currentChallengeIndex < challenges.length) {
-                document.getElementById('game-text').textContent = challenges[currentChallengeIndex];
-                document.getElementById('typing-input').focus();
-            } 
-            else if (currentMode === 'sentences' && currentChallengeIndex < challenges.length) {
-                const challenge = challenges[currentChallengeIndex];
-                document.getElementById('game-text').innerHTML = challenge.text.replace('_', '<span class="text-cyan-300">_____</span>');
-                document.getElementById('typing-input').focus();
-                
-                // Update progress
-                document.getElementById('progress-text').textContent = `${currentChallengeIndex + 1}/${challenges.length}`;
-                document.getElementById('progress-bar').style.width = `${(currentChallengeIndex + 1) / challenges.length * 100}%`;
-            }
-            else if (currentMode === 'interpretation' && currentChallengeIndex < challenges.length) {
-                const challenge = challenges[currentChallengeIndex];
-                document.getElementById('game-text').textContent = challenge.question;
-                
-                // Show options
-                const optionsContainer = document.getElementById('options-container');
-                optionsContainer.innerHTML = '';
-                optionsContainer.classList.remove('hidden');
-                
-                challenge.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'pixel-btn bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-none pixel-border w-full text-left';
-                    button.textContent = option;
-                    button.onclick = () => checkInterpretationAnswer(index);
-                    optionsContainer.appendChild(button);
-                });
-                
-                // Hide typing input for this mode
-                document.getElementById('typing-input').classList.add('hidden');
-                document.getElementById('submit-btn').classList.add('hidden');
-            }
-            else if (currentMode === 'logic' && currentChallengeIndex < challenges.length) {
-                const challenge = challenges[currentChallengeIndex];
-                
-                // For logic mode, we'll show the parts and ask to type the correct order
-                document.getElementById('game-text').textContent = `Ordene: ${challenge.parts.join(', ')}`;
-                document.getElementById('typing-input').placeholder = "Digite a ordem correta (ex: 1,2,3,4)";
-                document.getElementById('typing-input').focus();
-            }
-            else if (currentMode === 'creative') {
-                // Handle creative mode challenges
-                const gameType = document.getElementById('creative-type').value;
-                
-                if (gameType === 'syllables' && currentChallengeIndex < challenges.length) {
-                    document.getElementById('game-text').textContent = challenges[currentChallengeIndex];
-                }
-                else if ((gameType === 'words' || gameType === 'sentences') && currentChallengeIndex < challenges.length) {
-                    const challenge = challenges[currentChallengeIndex];
-                    document.getElementById('game-text').innerHTML = challenge.text.replace('_', '<span class="text-cyan-300">_____</span>');
-                }
-                
-                document.getElementById('typing-input').focus();
-            }
-            else {
-                // No more challenges, end game
+            if (!gameActive || currentChallengeIndex >= challenges.length) {
                 endGame();
+                return;
             }
+
+            const nextChallenge = challenges[currentChallengeIndex];
+
+            if (currentMode === "sentences" || (currentMode === "creative" && document.getElementById("creative-type").value === "sentences")) {
+                document.getElementById("game-text").textContent = nextChallenge.text;
+            } else if (currentMode === "syllables") {
+                document.getElementById("game-text").textContent = nextChallenge;
+            } else {
+                document.getElementById("game-text").textContent = typeof nextChallenge === "string" ? nextChallenge : nextChallenge.text;
+            }
+
+            // Foca no input
+            const input = document.getElementById("typing-input");
+            input.focus();
         }
         
         // Check answer
-        function checkAnswer() {
+        async function checkAnswer() {
             if (!gameActive) return;
             
             const input = document.getElementById('typing-input');
@@ -907,7 +914,7 @@
             
             if (currentMode === 'syllables') {
                 const correctAnswer = challenges[currentChallengeIndex].toLowerCase();
-                if (userAnswer === correctAnswer) {
+                if (userAnswer.includes(correctAnswer) && await isRealWord(userAnswer)) {
                     // Correct answer
                     addScore(10);
                     document.getElementById('game-text').classList.add('correct');
@@ -1028,6 +1035,17 @@
             document.getElementById('score').textContent = score;
         }
         
+        // -------- Validar se palavra existe (API Dicionário Aberto) --------
+        async function isRealWord(word) {
+            try {
+                const res = await fetch(`https://api.dicionario-aberto.net/word/${word}`);
+                return res.ok && (await res.json()).length > 0;
+            } catch (e) {
+                console.warn("Erro na API de dicionário:", e);
+                return true; // fallback: considera válido
+            }
+        }
+
         // Start timer
         function startTimer() {
             clearInterval(timerInterval);
@@ -1184,6 +1202,40 @@
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
+        }
+
+        function iniciarJogo() {
+            const input = document.getElementById("typing-input");
+            const submitBtn = document.getElementById("submit-btn");
+
+            // Exibe o input e o botão
+            input.style.display = "block";
+            submitBtn.style.display = "block";
+
+            // Limpa o valor do input e foca nele
+            input.value = "";
+            input.focus();
+
+            // Reinicia o jogo
+            score = 0;
+            timeLeft = 30;
+            currentChallengeIndex = 0;
+            gameActive = true;
+
+            // Atualiza o placar e o timer
+            document.getElementById("score").textContent = score;
+            document.getElementById("timer").textContent = timeLeft;
+
+            // Gera os desafios e exibe o primeiro
+            setupSyllablesMode();
+        }
+
+        function terminarJogo() {
+            const input = document.getElementById("typing-input");
+            const submitBtn = document.getElementById("submit-btn");
+
+            input.style.display = "none";
+            submitBtn.style.display = "none";
         }
     </script>
 </body>
