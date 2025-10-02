@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Perfil - L.U.A</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Press Start 2P', cursive;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at center, #0a0018 0%, #050010 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 0 5px #00f7ff, 0 0 15px #ff00ff, 0 0 30px #00f7ff;
+      margin: 30px 0;
+    }
+
+    .profile-container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Avatar redondo */
+    .avatar-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid #ff00ff;
+      box-shadow: 0 0 20px #ff00ff, 0 0 40px #00f7ff;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .avatar:hover {
+      transform: scale(1.05);
+    }
+
+    /* Botão editar imagem */
+    .edit-icon {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #00f7ff;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      color: #00f7ff;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .avatar-container:hover .edit-icon {
+      opacity: 1;
+    }
+
+    /* Inputs */
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      font-size: 10px;
+      color: #ccc;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #00f7ff;
+      background: #0d0d2a;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      box-shadow: 0 0 10px #ff00ff, 0 0 20px #00f7ff;
+    }
+
+    textarea {
+      resize: none;
+      height: 60px;
+    }
+
+    /* Botão neon */
+    .btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 2px solid #ff00ff;
+      background: linear-gradient(90deg, #00f7ff, #ff00ff);
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #ff00ff, 0 0 35px #00f7ff;
+    }
+
+    /* Privacidade painel */
+    .privacy-panel {
+      margin-top: 20px;
+      display: none;
+      background: linear-gradient(135deg, rgba(255,0,255,0.15), rgba(0,255,255,0.15));
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #00f7ff;
+      text-align: left;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      box-shadow: 0 0 15px #ff00ff, 0 0 30px #00f7ff;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .privacy-panel label {
+      font-size: 9px;
+      color: #ffddff;
+      text-shadow: 0 0 5px #ff00ff;
+    }
+
+    .privacy-panel input {
+      margin-bottom: 12px;
+      border: 2px solid #14c8ff;
+      background: #0d0d2a;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      outline: none;
+      width: 100%;
+    }
+
+    .privacy-panel input:focus {
+      box-shadow: 0 0 10px #ff00ff, 0 0 20px #00f7ff;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      width: 2px;
+      height: 2px;
+      opacity: 0.8;
+      animation: twinkle 2s infinite ease-in-out;
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <h1>⚙️ Editar Perfil</h1>
+
+  <div class="profile-container">
+    <!-- Avatar -->
+    <div class="avatar-container">
+      <img id="user-avatar" src="avatar.png" alt="Avatar" class="avatar">
+      <div class="edit-icon" onclick="document.getElementById('avatar-upload').click()">✏️</div>
+      <input type="file" id="avatar-upload" accept="image/png, image/jpeg" style="display:none;">
+    </div>
+
+    <!-- Informações pessoais -->
+    <div class="input-group">
+      <label for="nickname">Nickname</label>
+      <input type="text" id="nickname" placeholder="Digite seu nick">
+    </div>
+
+    <div class="input-group">
+      <label for="age">Idade</label>
+      <input type="number" id="age" placeholder="Sua idade">
+    </div>
+
+    <div class="input-group">
+      <label for="gender">Gênero</label>
+      <select id="gender">
+        <option value="">Selecione</option>
+        <option value="masculino">Masculino</option>
+        <option value="feminino">Feminino</option>
+        <option value="outro">Outro</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label for="bio">Bio (máx. 100 caracteres)</label>
+      <textarea id="bio" maxlength="100" placeholder="Escreva algo sobre você..."></textarea>
+    </div>
+
+    <!-- Botão Privacidade -->
+    <button class="btn" onclick="togglePrivacy()">🔒 Configurações de Privacidade</button>
+
+    <!-- Painel Privacidade -->
+    <div class="privacy-panel" id="privacy-panel">
+      <div class="input-group">
+        <label for="email">Trocar Email</label>
+        <input type="text" id="email" placeholder="Novo email">
+      </div>
+
+      <div class="input-group">
+        <label for="senha">Trocar Senha</label>
+        <input type="password" id="senha" placeholder="Nova senha">
+      </div>
+      <div class="input-group">
+        <label for="confirma-senha">Confirmar Nova Senha</label>
+        <input type="password" id="confirma-senha" placeholder="Confirme a nova senha">
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div style="margin-top:20px;">
+      <button id="salvar-perfil" class="btn">Salvar Alterações</button>
+      <a href="perfil.html" class="btn">Voltar</a>
+      <a href="login.html" class="btn">Sair</a>
+    </div>
+  </div>
+
+  <script>
+    // Estrelas
+    const starsContainer = document.getElementById("stars");
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement("div");
+      star.classList.add("star");
+      star.style.top = Math.random() * 100 + "%";
+      star.style.left = Math.random() * 100 + "%";
+      star.style.animationDelay = (Math.random() * 2) + "s";
+      starsContainer.appendChild(star);
+    }
+
+    // Toggle privacidade
+    function togglePrivacy() {
+      const panel = document.getElementById("privacy-panel");
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
+
+    // Preview avatar
+    document.getElementById("avatar-upload").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("user-avatar").src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      } else {
+        alert("Por favor selecione uma imagem PNG ou JPG.");
+      }
+    });
+  </script>
+
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+// Config Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDOOD1jFfKbznNbhbx0g22orXnvdY55IH8",
+  authDomain: "level-up-academy-698fa.firebaseapp.com",
+  projectId: "level-up-academy-698fa",
+  storageBucket: "level-up-academy-698fa.appspot.com",
+  messagingSenderId: "96904343253",
+  appId: "1:96904343253:web:4f938c593c3968951b7c5c",
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// Elementos
+const nicknameInput = document.getElementById("nickname");
+const idadeInput = document.getElementById("age");
+const generoInput = document.getElementById("gender");
+const bioInput = document.getElementById("bio");
+const avatarInput = document.getElementById("avatar-upload");
+const avatarImg = document.getElementById("user-avatar");
+const saveBtn = document.getElementById("salvar-perfil"); // Seleciona o botão "Salvar Alterações" pelo ID
+
+// Função salvar
+async function salvarPerfil(user) {
+  if (!user) {
+    alert("Usuário não autenticado!");
+    return;
+  }
+  console.log("Salvando perfil para UID:", user.uid);
+  let avatarURL = "";
+
+  // Upload da imagem se for trocada
+  if (avatarInput.files.length > 0) {
+    const file = avatarInput.files[0];
+    const storageRef = ref(storage, `avatars/${user.uid}.jpg`);
+    await uploadBytes(storageRef, file);
+    avatarURL = await getDownloadURL(storageRef);
+  } else {
+    avatarURL = avatarImg.src; // Mantém a foto atual
+  }
+
+  // Salvar no Firestore
+  await setDoc(doc(db, "users", user.uid), {
+    nickname: nicknameInput.value,
+    idade: idadeInput.value,
+    genero: generoInput.value,
+    bio: bioInput.value,
+    avatarURL: avatarURL
+  });
+
+  alert("Perfil salvo com sucesso 🚀");
+}
+
+// Carregar dados salvos
+async function carregarPerfil(user) {
+  const uid = user.uid;
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    nicknameInput.value = data.nickname || "";
+    idadeInput.value = data.idade || "";
+    generoInput.value = data.genero || "";
+    bioInput.value = data.bio || "";
+    if (data.avatarURL) avatarImg.src = data.avatarURL;
+  }
+}
+
+// Autenticação
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    carregarPerfil(user);
+    saveBtn.onclick = async () => {
+      console.log("Botão salvar clicado");
+      try {
+        await salvarPerfil(user);
+      } catch (e) {
+        console.error("Erro ao salvar perfil:", e);
+        alert("Erro ao salvar perfil: " + e.message);
+      }
+    };
+  } else {
+    window.location.href = "login.html";
+  }
+});
+</script>
+</body>
+</html>

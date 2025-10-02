@@ -98,15 +98,15 @@
   <button onclick="ganharXP()" class="xp-btn">Ganhar XP</button>
 
   <!-- PERFIL FLUTUANTE -->
-  <div class="perfil-hover">
-    <img src="avatar.png" alt="Avatar do usuário" class="avatar-icone">
-    <div class="perfil-info">
-      <strong>Guilherme</strong>
-      <a href="perfil.html">Meu Perfil</a>
-      <a href="config.html">Configurações</a>
-      <a href="sair.html">Sair</a>
-    </div>
+<div class="perfil-hover">
+  <img id="user-avatar" src="avatar.png" alt="Avatar do usuário" class="avatar-icone">
+  <div class="perfil-info">
+    <strong id="user-nickname">Usuário</strong>
+    <a href="perfil.html">Meu Perfil</a>
+    <a href="editar.html">Configurações</a>
+    <a href="#" id="logout">Sair</a>
   </div>
+</div>
 
   <script>
     let xpAtual = 100;
@@ -152,8 +152,8 @@
     </section>
 
     <section class="game">
-      <a href="fatos-historicos.html" class="game-button fatos">
-        Jogar Fatos Históricos
+      <a href="LUT.html" class="game-button fatos">
+        Level up Typing
       </a>
     </section>
 
@@ -213,5 +213,6 @@
       });
     })();
   </script>
+  <script src="LUA.js"></script>
 </body>
 </html>

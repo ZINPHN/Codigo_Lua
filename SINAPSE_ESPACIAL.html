@@ -21,24 +21,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 🔄 Tradutor pt -> id salvo no banco
-  const TRANSLATE = {
-    fire: "fogo",
-    water: "agua",
-    earth: "terra",
-    wind: "vento",
-    steam: "vapor",
-    mud: "lama",
-    storm: "tempestade",
-    lava: "lava",
-    dust: "poeira",
-    cloud: "nuvem",
-    rain: "chuva",
-    mountain: "montanha",
-    river: "rio",
-    // adiciona mais conforme precisar
-  };
-
   // Normaliza para o idioma do banco
   function toDbId(ids) {
     return ids.map(id => TRANSLATE[id] || id);
@@ -49,9 +31,9 @@
     const idsPT = toDbId(ids); // converte p/ português antes de consultar
     const idCanonical = [...idsPT].sort().join('+');
     const idAsIs = idsPT.join('+');
-    const idReverse = [...idsPT].reverse().join('+');
+    // const idReverse = [...idsPT].reverse().join('+'); // 🧹 REMOVER ESTA LINHA
 
-    const tries = [...new Set([idCanonical, idAsIs, idReverse])];
+    const tries = [...new Set([idCanonical, idAsIs])]; // idReverse removido
 
     for (const id of tries) {
       const ref = doc(db, "respostas", id);
@@ -61,8 +43,6 @@
     return null;
   }
 
-  // 🔧 Cria objeto global para debug no console
-  window._fs = { findRecipeDb };
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -108,30 +88,40 @@
 
     /* Estilo padrão de todos os itens */
     .item {
-      display: inline-flex;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px 14px;
-      margin: 6px;
+      padding: 6px 6px;
+      margin: 8px;
       border: 2px solid #ccc;
       border-radius: 12px;
       background: #111;
       color: white;
-      font-size: 14px;
+      font-size: 13px;
       text-align: center;
-      white-space: normal;
-      word-break: break-word;
+      min-width: 64px;
+      min-height: 64px;
+      max-width: 72px;
+      max-height: 72px;
       box-sizing: border-box;
-      min-width: 80px;  
-      min-height: 80px;  
+      gap: 2px;
+    }
+
+    .item .text-emoji {
+      font-size: 2rem; /* Tamanho padrão para todos os emojis */
+      margin-bottom: 2px;
+    }
+
+    .item .text-label {
+      font-size: 12px;
+      line-height: 1.1;
+      font-weight: 500;
     }
 
     /* Só os 4 iniciais (destaque fixo) */
     .item-base {
-      width: 20px;
-      height: 20px;
-      font-size: 16px;
+      border-width: 3px;
       font-weight: bold;
     }
   </style>
@@ -244,8 +234,18 @@
         </div>
 
         <div class="mb-5">
-          <h3 class="text-lg font-bold mb-2 text-purple-400">🌟 Descobertas</h3>
-          <p id="discoveries" class="text-2xl font-bold text-center">0</p>
+          <h3 class="text-lg font-bold mb-2 text-purple-400 flex items-center gap-2">
+            <span>🌟 Descobertas</span>
+            <span class="text-xs text-gray-400 ml-2">(Planeta: <span id="currentPlanetName"></span>)</span>
+          </h3>
+          <div class="flex items-center justify-center gap-2 text-2xl font-bold">
+            <span id="planetDiscoveries">0</span>
+            <span class="text-lg text-gray-400">/</span>
+            <span id="planetTotal">0</span>
+          </div>
+          <div class="text-xs text-center text-gray-400 mt-1">
+            Descobertas neste planeta
+          </div>
         </div>
 
         <div class="mb-5">
@@ -348,7 +348,8 @@
         ...Array(9).fill(0).map(()=> new Set(['fire','water','earth','wind']))
       ],
       discovered: new Set(), // global
-      achievements: new Set()
+      achievements: new Set(),
+      errorCount: 0, // contador de erros de combinação
     };
 
     // ---------- Conquistas ----------
@@ -368,12 +369,12 @@
 
     // ---------- Util arrays/combinações ----------
     const sortIds = arr => [...arr].sort();
-    const sameCombo = (a,b) => {
-      if (a.length!==b.length) return false;
-      const A = sortIds(a), B = sortIds(b);
-      for (let i=0;i<A.length;i++){ if (A[i]!==B[i]) return false; }
-      return true;
-    };
+    // function sameCombo(a,b) {
+    //   if (a.length!==b.length) return false;
+    //   const A = sortIds(a), B = sortIds(b);
+    //   for (let i=0;i<A.length;i++){ if (A[i]!==B[i]) return false; }
+    //   return true;
+    // }
 
     // ---------- Estrelas de fundo ----------
     function buildStars(){
@@ -396,24 +397,6 @@
       water:{id:'water',name:'Água',emoji:'💧',tags:['líquido'],lvl:1,planet:1},
       earth:{id:'earth',name:'Terra',emoji:'🌍',tags:['rocha'],lvl:1,planet:1},
       wind:{id:'wind',name:'Vento',emoji:'🌬️',tags:['energia'],lvl:1,planet:1},
-
-      // P1 exemplos (demais entram via receitas)
-      steam:{id:'steam',name:'Vapor',emoji:'💨',tags:['gás','processo'],lvl:2,planet:1},
-      mud:{id:'mud',name:'Lama',emoji:'🟫',tags:['orgânico'],lvl:2,planet:1},
-      lava:{id:'lava',name:'Lava',emoji:'🌋',tags:['rocha','quente'],lvl:2,planet:1},
-      dust:{id:'dust',name:'Poeira',emoji:'💨',tags:['rocha'],lvl:2,planet:1},
-      storm:{id:'storm',name:'Tempestade',emoji:'⛈️',tags:['clima','energia'],lvl:2,planet:1},
-      rock:{id:'rock',name:'Rocha',emoji:'🪨',tags:['rocha'],lvl:3,planet:1},
-      cloud:{id:'cloud',name:'Nuvem',emoji:'☁️',tags:['clima'],lvl:3,planet:1},
-      rain:{id:'rain',name:'Chuva',emoji:'🌧️',tags:['clima','líquido'],lvl:3,planet:1},
-      mountain:{id:'mountain',name:'Montanha',emoji:'⛰️',tags:['rocha'],lvl:3,planet:1},
-      river:{id:'river',name:'Rio',emoji:'🌊',tags:['líquido','geografia'],lvl:3,planet:1},
-
-      // marcadores genéricos para receitas futuras
-      plant:{id:'plant',name:'Planta',emoji:'🌱',tags:['biológico'],lvl:2,planet:2},
-      bacteria:{id:'bacteria',name:'Bactéria',emoji:'🦠',tags:['biológico'],lvl:2,planet:2},
-      metal:{id:'metal',name:'Metal',emoji:'🔩',tags:['tecnologia','construção'],lvl:3,planet:4},
-      glass:{id:'glass',name:'Vidro',emoji:'🪟',tags:['construção'],lvl:2,planet:1}
     };
 
     // ---------- UI: Planetas ----------
@@ -461,9 +444,10 @@
         }
 
         node.title = it.name;
-        node.innerHTML=`
-          <div class="text-3xl mb-1">${it.emoji||''}</div>
-          <div class="text-[13px]">${it.name}</div>`;
+        node.innerHTML = `
+  <div class="text-emoji">${it.emoji || ''}</div>
+  <div class="text-label">${it.name}</div>
+`;
         node.addEventListener('click',()=>toggleSelect(it.id));
         invEl.appendChild(node);
       });
@@ -475,12 +459,16 @@
         selectedEl.innerHTML='<p class="text-gray-500 text-sm">Clique nos itens do inventário para selecionar</p>';
         return;
       }
-      state.selected.forEach(id=>{
+      state.selected.forEach((id, idx)=>{
         const it = ITEMS[id]||{id, name:id, emoji:''};
         const chip=document.createElement('div');
-        chip.className='retro-border bg-gray-800 p-2 text-center';
+        chip.className='retro-border bg-gray-800 p-2 text-center cursor-pointer';
         chip.innerHTML=`<div class="text-xl">${it.emoji}</div><div class="text-[10px]">${it.name}</div>`;
-        chip.addEventListener('click',()=>toggleSelect(id));
+        chip.addEventListener('click',()=>{
+          // Remove apenas a ocorrência clicada
+          state.selected.splice(idx,1);
+          renderSelected(); updateHint();
+        });
         selectedEl.appendChild(chip);
       });
     }
@@ -513,7 +501,21 @@
       levelEl.textContent = `Nível ${state.level}`;
       const pct = Math.min(100, Math.floor((state.xp/state.xpNext)*100));
       xpBar.style.width = pct+'%';
-      discoveriesEl.textContent = state.discovered.size;
+
+      // Nome do planeta atual
+      const planeta = PLANETS[state.planetIndex];
+      $("#currentPlanetName").textContent = planeta.name;
+
+      // Descobertas do planeta atual
+      // Filtra os itens descobertos que pertencem ao planeta atual
+      const descobertasPlaneta = [...state.discovered].filter(id => (ITEMS[id]?.planet || 1) === planeta.id);
+      // Conta o total de itens possíveis do planeta atual
+      const totalPlaneta = Object.values(ITEMS).filter(it => it.planet === planeta.id).length;
+
+      $("#planetDiscoveries").textContent = descobertasPlaneta.length;
+      $("#planetTotal").textContent = totalPlaneta;
+
+      discoveriesEl.textContent = state.discovered.size; // total global (se quiser manter)
     }
 
     function renderAchievements(){
@@ -530,8 +532,8 @@
     function renderAll(){ renderPlanets(); renderInventory(); renderSelected(); renderHistory(); renderProgress(); renderAchievements(); updateHint(); buildGalaxy(); }
     // ---------- Seleção ----------
     function toggleSelect(id){
-      const i = state.selected.indexOf(id);
-      if(i===-1) state.selected.push(id); else state.selected.splice(i,1);
+      // Permite múltiplas seleções do mesmo item
+      state.selected.push(id);
       playSound('select');
       renderSelected(); updateHint();
     }
@@ -586,7 +588,7 @@
       if(state.selected.length<2){ setResult(null,'Selecione pelo menos 2 itens.'); playSound('error'); return; }
 
       const sel = sortIds(state.selected);
-      const found = await findRecipe(sel);  // <<<<<< AGORA VEM DO FIRESTORE
+      const found = await findRecipe(sel);
       if(!found){
         setResult(null,'Combinação inválida!');
         resultEl.classList.add('glitch-effect');
@@ -594,10 +596,29 @@
         playSound('error');
         state.selected = [];
         renderSelected(); updateHint();
+
+        // Incrementa contador de erro
+        state.errorCount = (state.errorCount || 0) + 1;
+
+        // Se chegou a 5 erros, mostra dica sutil
+        if(state.errorCount >= 5){
+          await showSubtleHint(); // <-- use await aqui!
+          state.errorCount = 0; // reseta para não repetir sempre
+        }
         return;
       }
 
+      // Se acertou, zera o contador de erros
+      state.errorCount = 0;
+
       const {output, tier, xpBase, level} = found;
+
+      // Verifica se já foi descoberto globalmente
+      if (state.globalInv.has(output)) {
+        setResult(output, "Esse elemento já foi criado");
+        playSound('error');
+        return;
+      }
 
       // Se não existir no ITEMS, cria usando os dados do Firestore (se existirem)
       if (!ITEMS[output]) {
@@ -615,7 +636,6 @@
 
       const inv = currentInv();
       const wasNewGlobal = !state.globalInv.has(output);
-      const wasNewLocal  = !inv.has(output);
 
       state.globalInv.add(output);
       inv.add(output);
@@ -643,6 +663,51 @@
         setTimeout(()=>resultEl.classList.remove('pulse-effect'),900);
       }else{
         resultIcon.innerHTML = '';
+      }
+    }
+
+    // Função para mostrar dica sutil baseada no inventário
+    async function showSubtleHint(){
+      const inv = [...currentInv()];
+      const dicas = [];
+
+      // Gera todas as combinações de 2 e 3 itens (com repetição)
+      function* combos(arr, n) {
+        const len = arr.length;
+        if (n === 2) {
+          for (let i = 0; i < len; i++)
+            for (let j = 0; j < len; j++)
+              yield [arr[i], arr[j]];
+        } else if (n === 3) {
+          for (let i = 0; i < len; i++)
+            for (let j = 0; j < len; j++)
+              for (let k = 0; k < len; k++)
+                yield [arr[i], arr[j], arr[k]];
+        }
+      }
+
+      // Testa combinações de 2 e 3 itens (com repetição)
+      for (const combo of combos(inv, 2)) {
+        const found = await findRecipe(combo);
+        if (found && !state.globalInv.has(found.output)) {
+          dicas.push(`"${ITEMS[combo[0]].name}" + "${ITEMS[combo[1]].name}"`);
+          if (dicas.length >= 3) break;
+        }
+      }
+      if (dicas.length < 3) {
+        for (const combo of combos(inv, 3)) {
+          const found = await findRecipe(combo);
+          if (found && !state.globalInv.has(found.output)) {
+            dicas.push(`"${ITEMS[combo[0]].name}" + "${ITEMS[combo[1]].name}" + "${ITEMS[combo[2]].name}"`);
+            if (dicas.length >= 3) break;
+          }
+        }
+      }
+
+      if (dicas.length > 0){
+        hintEl.textContent = "Dica: Tente combinar: " + dicas.join(" ou ");
+      } else {
+        hintEl.textContent = "Você já descobriu tudo que pode com os itens atuais! Tente avançar para outro planeta ou desbloquear mais itens.";
       }
     }
 

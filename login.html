@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L.U.A - Login</title>
+  <style>
+    /* Fundo estrelado */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: black;
+      overflow: hidden;
+      font-family: 'Press Start 2P', cursive;
+      color: white;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    /* Card central */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #ff00ff;
+      border-radius: 12px;
+      padding: 30px;
+      width: 320px;
+      box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+      text-align: center;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    h2 {
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #00ffff;
+      background: black;
+      color: white;
+      font-family: inherit;
+      font-size: 12px;
+      text-align: center;
+      border-radius: 6px;
+      box-shadow: 0 0 8px #00ffff;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #ff00ff;
+      box-shadow: 0 0 12px #ff00ff, 0 0 20px #00ffff;
+      transform: scale(1.05);
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px;
+      width: 100%;
+      background: linear-gradient(90deg, #ff00ff, #00ffff);
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 10px;
+      color: #ccc;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <div class="card">
+    <!-- Login -->
+    <div id="loginForm">
+      <h2>🚀 Login - L.U.A</h2>
+      <input type="text" placeholder="👾 Nickname" />
+      <input type="password" placeholder="🔒 Senha" />
+      <button>Entrar</button>
+      <p onclick="toggleForm()">Ainda não tem conta? Criar agora</p>
+    </div>
+
+    <!-- Cadastro -->
+    <div id="registerForm" class="hidden">
+      <h2>🌠 Criar Conta - L.U.A</h2>
+      <input type="email" placeholder="📧 Email" />
+      <input type="password" placeholder="🔒 Senha" />
+      <input type="password" placeholder="🔑 Confirmar Senha" />
+      <button>Criar Conta</button>
+      <p onclick="toggleForm()">Já tem conta? Fazer login</p>
+    </div>
+  </div>
+
+  <script>
+    // Alternar login/cadastro
+    function toggleForm() {
+      document.getElementById("loginForm").classList.toggle("hidden");
+      document.getElementById("registerForm").classList.toggle("hidden");
+    }
+
+    // Fundo estrelado animado
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2,
+        speed: Math.random() * 0.5 + 0.2
+      });
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(animateStars);
+    }
+    animateStars();
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOOD1jFfKbznNbhbx0g22orXnvdY55IH8",
+      authDomain: "level-up-academy-698fa.firebaseapp.com",
+      projectId: "level-up-academy-698fa",
+      storageBucket: "level-up-academy-698fa.appspot.com",
+      messagingSenderId: "96904343253",
+      appId: "1:96904343253:web:4f938c593c3968951b7c5c",
+      measurementId: "G-NTMLNLY7PH"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Aguarda DOM pronto
+    window.addEventListener("DOMContentLoaded", () => {
+      // Seleciona botões e inputs
+      const loginBtn = document.querySelector("#loginForm button");
+      const registerBtn = document.querySelector("#registerForm button");
+      const loginInputs = document.querySelectorAll("#loginForm input");
+      const registerInputs = document.querySelectorAll("#registerForm input");
+
+      // Login
+      loginBtn.addEventListener("click", async () => {
+        const email = loginInputs[0].value.trim();
+        const senha = loginInputs[1].value.trim();
+
+        if (!email || !senha) {
+          alert("Preencha todos os campos!");
+          return;
+        }
+
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+          alert(`Bem-vindo ${userCredential.user.email}!`);
+          window.location.href = "LUA.HTML";
+        } catch (error) {
+          alert("Email ou senha incorretos!");
+        }
+      });
+
+      // Cadastro
+      registerBtn.addEventListener("click", async () => {
+        const email = registerInputs[0].value.trim();
+        const senha = registerInputs[1].value.trim();
+        const confirmarSenha = registerInputs[2].value.trim();
+
+        if (!email || !senha || !confirmarSenha) {
+          alert("Preencha todos os campos!");
+          return;
+        }
+
+        if (senha !== confirmarSenha) {
+          alert("As senhas não coincidem!");
+          return;
+        }
+
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+          alert(`Conta criada com sucesso! Bem-vindo ${userCredential.user.email}`);
+          toggleForm();
+        } catch (error) {
+          alert("Erro ao criar conta: " + error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

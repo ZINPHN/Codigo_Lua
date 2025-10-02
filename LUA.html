@@ -12,15 +12,15 @@
   <div class="stars-bg"></div>
 
   <!-- PERFIL FLUTUANTE -->
-  <div class="perfil-hover">
-    <img src="avatar.png" alt="Avatar do usuário" class="avatar-icone">
-    <div class="perfil-info">
-      <strong>Guilherme</strong>
-      <a href="perfil.html">Meu Perfil</a>
-      <a href="config.html">Configurações</a>
-      <a href="sair.html">Sair</a>
-    </div>
+<div class="perfil-hover">
+  <img id="user-avatar" src="avatar.png" alt="Avatar do usuário" class="avatar-icone">
+  <div class="perfil-info">
+    <strong id="user-nickname">Usuário</strong>
+    <a href="perfil.html">Meu Perfil</a>
+    <a href="editar.html">Editar Perfil</a>
+    <a href="#" id="logout">Sair</a>
   </div>
+</div>
 
   <!-- HEADER -->
   <header class="pixel-header">
@@ -94,6 +94,47 @@
       starsBg.appendChild(star);
     }
   </script>
+  <script src="LUA.js"></script>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDOOD1jFfKbznNbhbx0g22orXnvdY55IH8",
+      authDomain: "level-up-academy-698fa.firebaseapp.com",
+      projectId: "level-up-academy-698fa",
+      storageBucket: "level-up-academy-698fa.appspot.com",
+      messagingSenderId: "96904343253",
+      appId: "1:96904343253:web:4f938c593c3968951b7c5c",
+      measurementId: "G-NTMLNLY7PH"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Atualiza perfil flutuante
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("user-nickname").textContent = data.nickname;
+          document.getElementById("user-avatar").src = data.photoURL;
+        }
+      } else {
+        document.getElementById("user-nickname").textContent = "Usuário";
+        document.getElementById("user-avatar").src = "avatar.png";
+      }
+    });
+
+    // Logout
+    document.getElementById("logout").addEventListener("click", () => {
+      signOut(auth);
+      window.location.href = "login.html"; // ou a página de login do seu site
+    });
+  </script>
 </body>
 </html>
